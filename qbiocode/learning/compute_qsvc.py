@@ -24,7 +24,7 @@ from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 
 def compute_qsvc(X_train, X_test, y_train, y_test, args, model='QSVC', data_key = '',
                  C=1, gamma='scale', pegasos=False, encoding: Literal['ZZ', 'Z', 'P']="ZZ",
-                 entanglement='linear', primitive = 'sampler', reps = 2, verbose=False):
+                 entanglement='linear', primitive = 'sampler', reps = 2, verbose=False, local_optimizer = ''):
     """
     This function computes a quantum support vector classifier (QSVC) using the Qiskit Machine Learning library.
     It takes training and testing datasets, along with various parameters to configure the QSVC model.
