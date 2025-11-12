@@ -42,15 +42,15 @@ def qml_winner(results_df, rawevals_df, output_dir, tag):
     df_best_permodel_summary = pd.concat([df_best_model_mean, df_best_model_median, df_best_model_max, df_best_model_std], axis=1)
     df_best_permodel_summary.columns = ['Mean_F1_Score', 'Median_F1_Score', 'Max_F1_Score', 'StandardDev_F1_Score']
     df_best_permodel_summary.to_csv(( os.path.join( output_dir,  tag +'_best_permodel_summary.csv')))
-    print(df_best_permodel_summary)
+    # print(df_best_permodel_summary)
     
     # extract the best results per dataset
     best_per_dataset = df_best.loc[df_best.groupby('Dataset')['f1_score'].idxmax()]
     # best_per_dataset = df_across_split.loc[df_across_split.groupby('Dataset')['f1_score'].idxmax()]
     # create list of qml methods
-    qml_list = ['qsvc', 'qnn', 'vqc', 'pqk']
-    qml_winner = df_best[df_best['Dataset'].isin(best_per_dataset[best_per_dataset['model'].isin(qml_list)]['Dataset'])]
-    # qml_winner = df_across_split[df_across_split['Dataset'].isin(best_per_dataset[best_per_dataset['model'].isin(qml_list)]['Dataset'])]
+    qml_list = ['QSVC', 'QNN', 'VQC', 'PQK']
+    # qml_winner = df_best[df_best['Dataset'].isin(best_per_dataset[best_per_dataset['model'].isin(qml_list)]['Dataset'])]
+    qml_winner = df_across_split[df_across_split['Dataset'].isin(best_per_dataset[best_per_dataset['model'].isin(qml_list)]['Dataset'])]
     if not qml_winner.empty:
         bestmethod = qml_winner.groupby('Dataset')['f1_score'].idxmax()
         qc_method_and_score = qml_winner.loc[bestmethod]
@@ -64,12 +64,14 @@ def qml_winner(results_df, rawevals_df, output_dir, tag):
         winner_evals = []
         for file in dataset:
             eval = rawevals.loc[rawevals['Dataset'] == file]
-            print(eval)
+            # print(eval)
             winner_evals.append(eval)
         winner_evals_df = pd.concat(winner_evals)
         winner_evals_df.to_csv(( os.path.join( output_dir,  tag +'_winner_evals.csv')), index=False)
         winner_scores_df = qc_method_and_score.iloc[:, -3:]
         winner_scores_df.to_csv(( os.path.join( output_dir,  tag +'_winner_score.csv')), index=False)
+
+        print(winner_scores_df)
         winner_eval_score = pd.concat([winner_evals_df, winner_scores_df], axis=1)
         winner_eval_score.to_csv(( os.path.join( output_dir,  tag +'_winner_eval_score.csv')), index=False) # contains dataset, evaluation, qml method, and  average f1 score 
         #######
@@ -78,7 +80,7 @@ def qml_winner(results_df, rawevals_df, output_dir, tag):
         print('*** The number of qml winners is', len(dataset))
         print('*** The qml winners are:', dataset)
         
-        return qml_winner, winner_eval_score
+        return qml_winner, winner_eval_score, df_best
     
     else:
         print('*** QML methods were outperformed by CML methods in all datasets ***')
