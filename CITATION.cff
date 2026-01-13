@@ -1,0 +1,47 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: QBioCode
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Bryan
+    family-names: Raubenolt
+    email: raubenb@ccf.org
+    affiliation: 'Cleveland Clinic, Cleveland, OH, USA'
+  - given-names: Aritra
+    family-names: Bose
+    email: a.bose@ibm.com
+    affiliation: 'IBM Research, Yorktown Heights, NY, USA'
+  - affiliation: 'IBM Research, Yorktown Heights, NY, USA'
+    given-names: Kahn
+    family-names: Rhrissorrakrai
+    email: krhriss@us.ibm.com
+  - affiliation: 'IBM Research, Yorktown Heights, NY, USA'
+    email: futro@us.ibm.com
+    given-names: Filippo
+    family-names: Utro
+  - affiliation: 'Cleveland Clinic, Cleveland, OH, USA'
+    orcid: 'https://orcid.org/0000-0002-7909-3099'
+    email: mohana2@ccf.org
+    given-names: Akhil
+    family-names: Mohan
+  - affiliation: 'Cleveland Clinic, Cleveland, OH, USA'
+    given-names: Daniel
+    family-names: Blankenberg
+    email: blanked2@ccf.org
+  - given-names: Laxmi
+    family-names: Parida
+    email: parida@us.ibm.com
+    affiliation: 'IBM Research, Yorktown Heights, NY, USA'
+repository-code: 'https://github.com/IBM/QBioCode'
+abstract: >-
+  QBioCode is a suite of computational resources to support
+  quantum applications in healthcare and life science data.
+keywords:
+  - Quantum Machine Learning
+  - Machine Learning
+license: Apache-2.0
