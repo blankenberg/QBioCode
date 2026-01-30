@@ -35,11 +35,10 @@ setup(
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
-    
         "Operating System :: OS Independent",
     ],
     install_requires=read_requirements(), # This pulls dependencies from requirements.txt
-    python_requires='>=3.7', # Specify the minimum Python version required
+    python_requires='>=3.10', # Specify the minimum Python version required
     # If you have non-code files that need to be included in your package,
     # uncomment and configure package_data or include_package_data
     # package_data={

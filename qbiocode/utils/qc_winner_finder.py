@@ -29,7 +29,11 @@ def qml_winner(results_df, rawevals_df, output_dir, tag):
     # pull in the raw evaluations
     rawevals = rawevals_df.copy()
     #first, compute mean across all splits 
-    df_across_split= df.groupby(['Dataset', 'embeddings', 'model', 'Model_Parameters'])['f1_score'].mean().reset_index()
+    if 'Model_Parameters' in df.columns:
+        df_across_split= df.groupby(['Dataset', 'embeddings', 'model', 'Model_Parameters'])['f1_score'].mean().reset_index()
+    else: 
+        # if 'Model_Parameters' is not present, this means you ran a grid search and this column will be named 'BestParams_GridSearch' instead
+        df_across_split= df.groupby(['Dataset', 'embeddings', 'model', 'BestParams_GridSearch'])['f1_score'].mean().reset_index()
     #now, extract the best results per method across embedding and iteration
     df_best = df_across_split.groupby(['Dataset', 'model'])['f1_score'].max().reset_index()
     #df_best = df_across_split.groupby(['Dataset', 'model', 'Model_Parameters'])['f1_score'].max().reset_index()
