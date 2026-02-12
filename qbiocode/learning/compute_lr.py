@@ -60,7 +60,7 @@ def compute_lr(X_train, X_test, y_train, y_test, args, model='Logistic Regressio
     beg_time = time.time()
     logres = OneVsOneClassifier(LogisticRegression(penalty=penalty, dual=dual, tol=tol, C=C, fit_intercept=fit_intercept, 
                                                    intercept_scaling=intercept_scaling, class_weight=class_weight, random_state=random_state, 
-                                                   solver=solver, max_iter=max_iter, multi_class=multi_class,
+                                                   solver=solver, max_iter=max_iter,
                                                    warm_start=warm_start, n_jobs=n_jobs, l1_ratio=l1_ratio))
     # Fit the training datset
     model_fit = logres.fit(X_train, y_train)

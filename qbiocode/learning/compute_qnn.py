@@ -9,7 +9,7 @@ import qbiocode.utils.qutils as qutils
 # ====== Qiskit imports ======
 from qiskit_machine_learning.algorithms.classifiers import NeuralNetworkClassifier
 from qiskit_machine_learning.neural_networks import SamplerQNN, EstimatorQNN
-from qiskit_machine_learning.circuit.library import QNNCircuit
+from qiskit_machine_learning.circuit.library import qnn_circuit as QNNCircuit 
 
 from qiskit_algorithms.utils import algorithm_globals
 #from qiskit.primitives import Sampler
@@ -66,25 +66,26 @@ def compute_qnn(X_train, X_test, y_train, y_test, args, model='QNN', data_key = 
     optimizer = qutils.get_optimizer( local_optimizer, max_iter=maxiter)
 
     
-    qc = QNNCircuit(num_qubits=X_train.shape[1], feature_map=feature_map, ansatz=ansatz)
+    # qc, input_params, weight_params = QNNCircuit(num_qubits=X_train.shape[1], feature_map=feature_map, ansatz=ansatz)
+    qc, _, _ = QNNCircuit(num_qubits=X_train.shape[1], feature_map=feature_map, ansatz=ansatz)
 
     print(f"Currently running a quantum neural network (QNN) on this dataset.")
     print(f"The number of qubits in your circuit is: {feature_map.num_qubits}")
     print(f"The number of parameters in your circuit is: {feature_map.num_parameters}")
-    
-    # Extract input and weight parameters
-    input_params = qc.input_parameters
-    weight_params = qc.weight_parameters
+    print(f"The number of ansatz parameters in your circuit is: {ansatz.num_parameters}")
+
     if primitive == 'estimator':
         if  args['backend'] == 'simulator':
-            qnn = EstimatorQNN(circuit=qc)
+            qnn = EstimatorQNN(circuit=qc,
+                               input_params=feature_map.parameters,
+                                weight_params=ansatz.parameters)        
         else:
             pm = generate_preset_pass_manager(backend=backend, optimization_level=3)
             qnn = EstimatorQNN(circuit=qc, 
                                estimator=prim, 
                                pass_manager=pm, 
-                               input_params=input_params, 
-                               weight_params=weight_params)
+                                input_params=feature_map.parameters,
+                                weight_params=ansatz.parameters)
 
         # QNN maps inputs to [-1, +1]
         qnn.forward(X_train[0, :], algorithm_globals.random.random(qnn.num_weights))    
@@ -96,13 +97,15 @@ def compute_qnn(X_train, X_test, y_train, y_test, args, model='QNN', data_key = 
         output_shape = 2  # corresponds to the number of classes, possible outcomes of the (parity) mapping
         # construct QNN
         if 'simulator' in args['backend']:
-            qnn = SamplerQNN(circuit=qc, interpret=parity, output_shape=output_shape)
+            qnn = SamplerQNN(circuit=qc, interpret=parity, output_shape=output_shape,
+                             input_params=feature_map.parameters,
+                                weight_params=ansatz.parameters)
         else:
             pm = generate_preset_pass_manager(backend=backend, optimization_level=3)                
             qnn = SamplerQNN(circuit=qc, sampler=prim, 
                                     interpret=parity, output_shape=output_shape, 
-                                    pass_manager=pm, input_params=input_params, 
-                                    weight_params=weight_params)
+                                    pass_manager=pm, input_params=feature_map.parameters,
+                                weight_params=ansatz.parameters)
             
     # construct classifier
     qnn = NeuralNetworkClassifier(neural_network=qnn, optimizer=optimizer)
