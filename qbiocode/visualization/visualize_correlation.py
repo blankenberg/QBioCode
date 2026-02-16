@@ -116,7 +116,11 @@ def plot_results_correlation( correlations_df, metric = 'f1_score', title = '', 
     data = pd.concat( [data[ ~data['model'].isin( ['QSVC', 'QNN', 'VQC', 'PQK']) ], data[ data['model'].isin( ['QSVC', 'QNN', 'VQC', 'PQK']) ] ] )
     fm = dict(zip( list(set(data['feature'])), range(len(set(data['feature']))) ) )
     data['feature_map'] = [ fm[x] for x in data['feature']]
-    data['norm_size'] = [float(np.round(x*100)) for x in MinMaxScaler().fit_transform(data[size].values.reshape(-1,1))]
+
+    # Scale the dot size and then add an epsilon
+    epsilon = 5
+    data['norm_size'] = [float(np.round(x*100))+epsilon for x in MinMaxScaler().fit_transform(data[size].values.reshape(-1,1))]
+
 
     data[key] = [ re.sub( '_', ' / ', x ) for x in data[key]]
 
@@ -183,36 +187,6 @@ def plot_results_correlation( correlations_df, metric = 'f1_score', title = '', 
                         xticklabels = xticks,
                         )
     # ax.ax_row_dendrogram.set_visible(False) #suppress row dendrogram
-    # ax.ax_col_dendrogram.set_visible(False) #suppress column dendrogram
-
-    plt.tight_layout() 
-    if save_file_path != '':
-        plt.savefig(re.sub( '.pdf', '_noncluster_heatmap.pdf', save_file_path ), dpi=300, bbox_inches='tight')
-    plt.show()
-    plt.close()
-
-
-    datatypes = list(set(data['datatype']))
-
-    to_plot_datatype = pd.DataFrame()
-    for d in datatypes:
-        d_col = [ x for x in to_plot.columns if re.sub( '^.* ', '', x) == d ]
-        to_plot_d = to_plot.loc[:,d_col]
-        qml_col = [ x  for x in to_plot_d.columns if re.sub( ' .*', '', x) in model_qml]
-        cml_col = [ x  for x in to_plot_d.columns if re.sub( ' .*', '', x) not in model_qml]
-        to_plot_datatype = pd.concat( [to_plot_datatype, to_plot_d.loc[:,qml_col + cml_col ] ], axis = 1 )
-
-    ccolors = [ 'magenta' if re.sub( ' .*', '', x) in model_qml else 'tan' for x in to_plot_datatype.columns]
-    ax = sns.clustermap(to_plot_datatype.fillna(0),
-                        figsize=figsize,
-                        col_colors=ccolors,
-                        col_cluster=False,
-    
-                        cmap = 'vlag',
-                        center = 0,
-                        xticklabels = xticks,
-                        )
-    ax.ax_row_dendrogram.set_visible(False) #suppress row dendrogram
     # ax.ax_col_dendrogram.set_visible(False) #suppress column dendrogram
 
     plt.tight_layout() 
