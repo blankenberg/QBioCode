@@ -678,6 +678,79 @@ The ``find_string_in_files`` function helps you quickly locate specific paramete
 - Locate configurations with specific quantum backend settings
 - Validate consistency of hyperparameters
 
+Tracking Job Progress
+---------------------
+
+The ``track_progress`` function monitors computational job progress by comparing completed datasets against total input datasets. Unlike ``checkpoint_restart`` (which returns completed dataset names for filtering), ``track_progress`` provides progress statistics and remaining work estimates.
+
+.. code-block:: python
+
+   from qbiocode.utils.combine_evals_results import track_progress
+   
+   # Monitor progress of current job
+   completed, num_done, num_remaining = track_progress(
+       input_dataset_dir='data/inputs',
+       current_results_dir='results/current_run',
+       completion_marker='RawDataEvaluation.csv',
+       verbose=True
+   )
+   
+   print(f"\nProgress: {num_done}/{num_done + num_remaining} datasets completed")
+   if num_remaining == 0:
+       print("Job complete! Ready to combine results.")
+
+**Key Differences from checkpoint_restart:**
+
+- ``checkpoint_restart``: Returns list of completed names → **Use for resuming jobs**
+- ``track_progress``: Returns list + progress counts → **Use for monitoring status**
+
+**Use Cases:**
+
+- Monitor progress of long-running batch jobs
+- Verify job completion before combining results
+- Estimate remaining computation time
+- Generate progress reports
+
+Combining Results from Interrupted Jobs
+----------------------------------------
+
+When a job is interrupted and resumed, ``combine_results`` merges results from both runs into unified output files.
+
+.. code-block:: python
+
+   from qbiocode.utils.combine_evals_results import combine_results
+   
+   # Combine results from interrupted and resumed runs
+   eval_df, results_df = combine_results(
+       prev_results_dir='results/run1_interrupted',
+       recent_results_dir='results/run2_resumed',
+       verbose=True
+   )
+   
+   print(f"Combined {len(eval_df)} evaluation records")
+   print(f"Combined {len(results_df)} result records")
+
+**Customizing File Patterns:**
+
+.. code-block:: python
+
+   # Custom file prefixes and output names
+   eval_df, results_df = combine_results(
+       prev_results_dir='results/old',
+       recent_results_dir='results/new',
+       eval_file_prefix='Evaluation',
+       results_file_prefix='Results',
+       output_eval_file='AllEvaluations.csv',
+       output_results_file='AllResults.csv'
+   )
+
+**Use Cases:**
+
+- Merge results after job interruption and restart
+- Combine results from multiple batch runs
+- Consolidate distributed computation results
+- Create unified datasets for downstream analysis
+
 Combined Workflow Example
 -------------------------
 
