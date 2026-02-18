@@ -488,7 +488,9 @@ class QuantumSage():
         
         for metric in self._available_metrics:
             plt.figure(figsize=figsize)
-            sns.barplot(data = results_df[results_df['metric']==metric], x = 'variable', y = 'value', hue = 'model', hue_order=self._available_models)
+            # Filter data for current metric
+            metric_data = results_df[results_df['metric']==metric]
+            sns.barplot(data = metric_data, x = 'variable', y = 'value', hue = 'model', hue_order=self._available_models)  # type: ignore[arg-type]
             plt.title( "Predictive performance for each model for " + metric)
             plt.xlabel( "Metric")
             plt.ylabel( "Value" )
@@ -499,10 +501,11 @@ class QuantumSage():
             plt.show()
             plt.close()
 
+            # Filter predictions for current metric
             toPlot = preds[ preds['metric'] == metric ]
             plt.figure(figsize=figsize)
             plt.title( "Predictive performance for each model for " + metric)
-            sns.scatterplot( data = toPlot, x = 'y_test', y = 'pred', hue = 'model' )
+            sns.scatterplot( data = toPlot, x = 'y_test', y = 'pred', hue = 'model' )  # type: ignore[arg-type]
             plt.xlabel( "Actual")
             plt.ylabel( "Predicted" )
             plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')

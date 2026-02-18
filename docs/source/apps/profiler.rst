@@ -494,3 +494,119 @@ Troubleshooting
 .. note::
     The project will fail if the ``config.yaml`` file is missing, incorrectly formatted, or contains invalid parameter values. Always validate your configuration before running large experiments.
 
+
+
+Checkpoint and Restart
+======================
+
+When processing large batches of datasets, jobs may be interrupted due to time limits, system failures, or resource constraints. QProfiler provides a checkpoint restart utility to resume processing without recomputing completed datasets.
+
+How It Works
+------------
+
+The ``checkpoint_restart`` function scans a previous results directory and identifies which datasets were fully processed by checking for completion marker files (e.g., ``RawDataEvaluation.csv``). You can then filter your dataset list to process only the remaining incomplete datasets.
+
+Basic Usage
+-----------
+
+.. code-block:: python
+
+   from qbiocode.utils.dataset_checkpoint import checkpoint_restart
+   import os
+   
+   # Identify completed datasets from previous run
+   completed = checkpoint_restart(
+       previous_results_dir='./previous_run_results',
+       verbose=True
+   )
+   
+   # Get all datasets to process
+   all_datasets = [f.replace('.csv', '') for f in os.listdir('./data') 
+                   if f.endswith('.csv')]
+   
+   # Filter to only incomplete datasets
+   remaining = [d for d in all_datasets if d not in completed]
+   
+   print(f"Previously completed: {len(completed)} datasets")
+   print(f"Remaining to process: {len(remaining)} datasets")
+   
+   # Continue processing with remaining datasets
+   # (use 'remaining' list in your batch processing loop)
+
+Advanced Usage
+--------------
+
+**Custom Settings**
+
+.. code-block:: python
+
+   from qbiocode.utils.dataset_checkpoint import checkpoint_restart
+   
+   # Custom completion marker and directory naming
+   completed = checkpoint_restart(
+       previous_results_dir='./results_2024_01_15',
+       completion_marker='ModelResults.csv',  # Different marker file
+       prefix_length=0,  # No prefix to strip from directory names
+       verbose=True
+   )
+
+**Integration with Batch Processing**
+
+.. code-block:: python
+
+   import os
+   from qbiocode.utils.dataset_checkpoint import checkpoint_restart
+   from qbiocode.evaluation import model_run
+   
+   # Step 1: Check for previous results
+   if os.path.exists('./previous_results'):
+       completed_datasets = checkpoint_restart(
+           previous_results_dir='./previous_results',
+           verbose=True
+       )
+   else:
+       completed_datasets = []
+   
+   # Step 2: Get list of all datasets
+   data_dir = './datasets'
+   all_datasets = [f.replace('.csv', '') for f in os.listdir(data_dir)
+                   if f.endswith('.csv')]
+   
+   # Step 3: Filter to incomplete datasets
+   datasets_to_process = [d for d in all_datasets 
+                          if d not in completed_datasets]
+   
+   # Step 4: Process remaining datasets
+   for dataset_name in datasets_to_process:
+       print(f"Processing {dataset_name}...")
+       # Your QProfiler processing code here
+       # ...
+
+Parameters
+----------
+
+- ``previous_results_dir`` (str): Path to directory with previous run results
+- ``completion_marker`` (str, optional): Filename indicating completion (default: ``'RawDataEvaluation.csv'``)
+- ``prefix_length`` (int, optional): Characters to strip from directory names (default: 8 for ``'dataset_'`` prefix)
+- ``verbose`` (bool, optional): Print progress information (default: False)
+
+Returns
+-------
+
+List of dataset names that were successfully completed in the previous run.
+
+.. tip::
+   **Best Practices for Checkpoint Restart:**
+   
+   - Always use ``verbose=True`` to verify which datasets are being skipped
+   - Keep previous results directories until you confirm the new run completed successfully
+   - Manually combine CSV results from previous and current runs if needed
+   - Consider using unique output directories for each run (e.g., with timestamps)
+
+.. note::
+   The checkpoint restart function only checks for the *presence* of the completion marker file, not its contents. Ensure your previous run actually completed successfully for the identified datasets.
+
+.. seealso::
+   - :doc:`QProfiler Tutorial <../tutorials/QProfiler/example_qprofiler>` - Complete workflow examples
+   - :doc:`Configuration Guide <config>` - Setting up batch processing
+   - :py:func:`qbiocode.utils.dataset_checkpoint.checkpoint_restart` - Full API documentation
