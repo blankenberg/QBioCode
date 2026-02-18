@@ -49,7 +49,22 @@ Once the activated, you'll see `(venv)` at the beginning of your terminal promt.
   ```bash
   pip install  .
   ```
-5. **Deactivate the virtual enviroment (when you are done):**
+
+5. **macOS Users: Install OpenMP for XGBoost (Required)**
+   
+   On macOS, XGBoost requires the OpenMP library. Install it using Homebrew:
+   ```bash
+   brew install libomp
+   ```
+   
+   If you don't have Homebrew installed, visit [https://brew.sh/](https://brew.sh/) for installation instructions.
+   
+   After installing OpenMP, you may need to reinstall XGBoost:
+   ```bash
+   pip install --force-reinstall xgboost
+   ```
+
+6. **Deactivate the virtual enviroment (when you are done):**
    ```bash
     deactivate
    ```
@@ -68,7 +83,22 @@ conda create -n qbc python==3.12
 conda activate qbc
 pip install .
 ```
-3. Verify that the new environment and packages were installed correctly:
+
+3. **macOS Users: Install OpenMP for XGBoost (Required)**
+   
+   On macOS, XGBoost requires the OpenMP library. Install it using Homebrew:
+   ```bash
+   brew install libomp
+   ```
+   
+   If you don't have Homebrew installed, visit [https://brew.sh/](https://brew.sh/) for installation instructions.
+   
+   After installing OpenMP, you may need to reinstall XGBoost:
+   ```bash
+   pip install --force-reinstall xgboost
+   ```
+
+4. Verify that the new environment and packages were installed correctly:
 ```
 conda env list
 pip list
@@ -139,7 +169,20 @@ Once your Jupyter notebook server is running:
    pip install .
    ```
 
-3. **Verify installation**:
+3. **macOS Users: Install OpenMP for XGBoost (if needed)**
+   
+   If you're using macOS and plan to use XGBoost models, you may need OpenMP:
+   ```bash
+   # This may not work in Galaxy's terminal, but try:
+   brew install libomp
+   pip install --force-reinstall xgboost
+   ```
+   
+   ```{note}
+   Galaxy environments may have XGBoost pre-configured. If you encounter XGBoost errors, consider using other models (Random Forest, SVC, etc.) or switch to local installation.
+   ```
+
+4. **Verify installation**:
 
    ```bash
    python -c "import qbiocode; print('QBioCode installed successfully!')"
@@ -197,6 +240,13 @@ pip install .
 # Restart the kernel: Kernel → Restart Kernel
 # Then re-import
 import qbiocode
+```
+
+**Issue: XGBoost errors on macOS**
+```bash
+# Install OpenMP library
+brew install libomp
+pip install --force-reinstall xgboost
 ```
 
 **Issue: Session timeout**

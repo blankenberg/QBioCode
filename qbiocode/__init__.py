@@ -33,7 +33,12 @@ from .learning.compute_dt import compute_dt, compute_dt_opt
 from .learning.compute_nb import compute_nb, compute_nb_opt
 from .learning.compute_lr import compute_lr, compute_lr_opt
 from .learning.compute_rf import compute_rf, compute_rf_opt
-from .learning.compute_xgb import compute_xgb, compute_xgb_opt
+try:
+    from .learning.compute_xgb import compute_xgb, compute_xgb_opt
+except Exception:
+    # XGBoost not available (e.g., OpenMP not installed on macOS)
+    compute_xgb = None  # type: ignore
+    compute_xgb_opt = None  # type: ignore
 from .learning.compute_mlp import compute_mlp, compute_mlp_opt
 from .learning.compute_qnn import compute_qnn
 from .learning.compute_qsvc import compute_qsvc

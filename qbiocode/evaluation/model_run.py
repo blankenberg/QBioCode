@@ -3,19 +3,19 @@ import os, json
 import pandas as pd
 
 # ====== Supervised CML functions imports ======
-from qbiocode import compute_svc, compute_svc_opt
-from qbiocode import compute_dt, compute_dt_opt
-from qbiocode import compute_nb, compute_nb_opt
-from qbiocode import compute_lr, compute_lr_opt
-from qbiocode import compute_rf, compute_rf_opt
-from qbiocode import compute_xgb, compute_xgb_opt
-from qbiocode import compute_mlp, compute_mlp_opt
+from qbiocode.learning.compute_svc import compute_svc, compute_svc_opt
+from qbiocode.learning.compute_dt import compute_dt, compute_dt_opt
+from qbiocode.learning.compute_nb import compute_nb, compute_nb_opt
+from qbiocode.learning.compute_lr import compute_lr, compute_lr_opt
+from qbiocode.learning.compute_rf import compute_rf, compute_rf_opt
+from qbiocode.learning.compute_xgb import compute_xgb, compute_xgb_opt
+from qbiocode.learning.compute_mlp import compute_mlp, compute_mlp_opt
 
 # ====== Supervised QML functions imports ======
-from qbiocode import compute_qnn
-from qbiocode import compute_qsvc
-from qbiocode import compute_vqc
-from qbiocode import compute_pqk
+from qbiocode.learning.compute_qnn import compute_qnn
+from qbiocode.learning.compute_qsvc import compute_qsvc
+from qbiocode.learning.compute_vqc import compute_vqc
+from qbiocode.learning.compute_pqk import compute_pqk
 
 # ======= Parallelization =====
 from joblib import Parallel, delayed
@@ -89,7 +89,7 @@ def model_run(X_train, X_test, y_train, y_test, data_key, args):
                                                                            **args[method+'_args'], verbose=False)
                                                                            for method in args['model']) 
     
-    model_total_result = pd.melt(pd.concat(results)).dropna()
+    model_total_result = pd.melt(pd.concat(results)).dropna()  # type: ignore
     model_total_result['i'] = 0
     model_total_result = model_total_result.pivot(columns="variable", values="value", index="i")
     return model_total_result.to_dict()

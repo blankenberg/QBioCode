@@ -9,7 +9,12 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.linear_model import LogisticRegression
-from xgboost import XGBClassifier
+try:
+    from xgboost import XGBClassifier
+    XGBOOST_AVAILABLE = True
+except Exception:
+    XGBOOST_AVAILABLE = False
+    XGBClassifier = None  # type: ignore
 
 # ====== Additional local imports ======
 from qbiocode.evaluation.model_evaluation import modeleval
@@ -205,8 +210,17 @@ def compute_pqk(X_train, X_test, y_train, y_test, args, model='PQK', data_key = 
 
 
 def create_xgb_model(seed):
-    # Initialize the Logistic Regression Classifier
-    xgb = XGBClassifier(objective='binary:logistic', eval_metric='logloss')
+    # Initialize the XGBoost Classifier
+    if not XGBOOST_AVAILABLE:
+        raise ImportError(
+            "XGBoost is not properly installed or configured.\n"
+            "On macOS, you may need to install OpenMP:\n"
+            "  brew install libomp\n\n"
+            "Then reinstall XGBoost:\n"
+            "  pip install --force-reinstall xgboost\n\n"
+            "See installation documentation for more details."
+        )
+    xgb = XGBClassifier(objective='binary:logistic', eval_metric='logloss')  # type: ignore
 
     xgb_param_distributions = {
         'n_estimators': [100, 200, 300],

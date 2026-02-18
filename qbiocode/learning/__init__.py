@@ -39,7 +39,12 @@ from .compute_mlp import compute_mlp, compute_mlp_opt
 from .compute_nb import compute_nb, compute_nb_opt
 from .compute_rf import compute_rf, compute_rf_opt
 from .compute_svc import compute_svc, compute_svc_opt
-from .compute_xgb import compute_xgb, compute_xgb_opt
+try:
+    from .compute_xgb import compute_xgb, compute_xgb_opt
+except Exception:
+    # XGBoost not available (e.g., OpenMP not installed on macOS)
+    compute_xgb = None  # type: ignore
+    compute_xgb_opt = None  # type: ignore
 
 # Quantum ML algorithms
 from .compute_qnn import compute_qnn

@@ -36,9 +36,11 @@ def track_progress(input_dataset_dir, current_results_dir):
     print('You have finished running program on {} out of a total of {} input datasets.'.format(len(completed_files), len(num_input_datasets)))
     print('You have {} input datasets left before program finishes.'.format(len(num_input_datasets)-len(completed_files)))
     return
-input_dataset_dir = 'path to dir containing input datasets your current job is iterating over'
-current_results_dir = 'path to dir containing outputs of current job'
-track_progress(input_dataset_dir=input_dataset_dir, current_results_dir=current_results_dir)
+
+# Example usage (commented out to prevent execution at import time):
+# input_dataset_dir = 'path to dir containing input datasets your current job is iterating over'
+# current_results_dir = 'path to dir containing outputs of current job'
+# track_progress(input_dataset_dir=input_dataset_dir, current_results_dir=current_results_dir)
 
 def combine_results(prev_results_dir, recent_results_dir):
     """
