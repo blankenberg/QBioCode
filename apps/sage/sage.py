@@ -477,9 +477,15 @@ class QuantumSage():
                 y = self._results_subsages[metric][model]['y_test']
                 preds = pd.concat( [preds,
                                     pd.DataFrame( [[model]*len(p),[metric]*len(p),p,y], index = ['model', 'metric', 'pred', 'y_test'] ).transpose() ] )
-            results_df = pd.DataFrame(results, columns=['model','metric','mae','mse','rmse','r2'])
-
+        
+        # Create results DataFrame after collecting all results
+        if not results:
+            print("Warning: No results to plot. Train QSages first.")
+            return
+        
+        results_df = pd.DataFrame(results, columns=['model','metric','mae','mse','rmse','r2'])
         results_df = results_df.melt(id_vars=['model', 'metric'])
+        
         for metric in self._available_metrics:
             plt.figure(figsize=figsize)
             sns.barplot(data = results_df[results_df['metric']==metric], x = 'variable', y = 'value', hue = 'model', hue_order=self._available_models)
