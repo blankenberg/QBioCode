@@ -3,6 +3,7 @@ import time
 import numpy as np
 import os
 import pandas as pd
+import warnings
 from sklearn.metrics import confusion_matrix, classification_report, f1_score, accuracy_score, auc
 from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
 from sklearn.neural_network import MLPClassifier
@@ -30,12 +31,13 @@ from qiskit.quantum_info import Pauli
 from sklearn import svm
 
 def compute_pqk(X_train, X_test, y_train, y_test, args, model='PQK', data_key = '', verbose=False,
-                 encoding = 'Z', primitive = 'estimator', entanglement = 'linear', reps= 2):
+                 encoding = 'Z', primitive = 'estimator', entanglement = 'linear', reps= 2,
+                 classical_models=None):
     """
     This function generates quantum circuits, computes projections of the data onto these circuits,
-    and evaluates the performance of a Support Vector Classifier (SVC) on the projected data.
+    and evaluates the performance of classical machine learning models on the projected data.
     It uses a feature map to encode the data into quantum states and then measures the expectation values
-    of Pauli operators to obtain the features. The SVC is trained on the projected training data and
+    of Pauli operators to obtain the features. The classical models are trained on the projected training data and
     evaluated on the projected test data. The function returns evaluation metrics and model parameters.
     This function requires a quantum backend (simulator or real quantum hardware) for execution.
     It supports various configurations such as encoding methods, entanglement strategies, and repetitions
@@ -58,10 +60,17 @@ def compute_pqk(X_train, X_test, y_train, y_test, args, model='PQK', data_key = 
         primitive (str): Primitive type to use, default is 'estimator'.
         entanglement (str): Entanglement strategy, default is 'linear'.
         reps (int): Number of repetitions for the feature map, default is 2.
+        classical_models (list): List of classical models to train on quantum projections.
+                                 Options: 'rf', 'mlp', 'svc', 'lr', 'xgb'.
+                                 Default is ['rf', 'mlp', 'svc', 'lr', 'xgb'].
 
     Returns:
-        modeleval (dict): A dictionary containing evaluation metrics and model parameters.
+        modeleval (pd.DataFrame): A DataFrame containing evaluation metrics and model parameters for all models.
     """
+    
+    # Set default classical models if not provided
+    if classical_models is None:
+        classical_models = ['rf', 'mlp', 'svc', 'lr', 'xgb']
 
     beg_time = time.time()
     feat_dimension = X_train.shape[1]
@@ -175,8 +184,27 @@ def compute_pqk(X_train, X_test, y_train, y_test, args, model='PQK', data_key = 
     projections_test = np.load( file_projection_test )
     projections_test = np.array(projections_test).reshape(len(projections_test), -1)
     
+    # Check if XGBoost is requested but not available
+    if 'xgb' in classical_models and not XGBOOST_AVAILABLE:
+        warnings.warn(
+            "XGBoost is not properly installed or configured and will be skipped.\n"
+            "On macOS, you may need to install OpenMP:\n"
+            "  brew install libomp\n"
+            "Then reinstall XGBoost:\n"
+            "  pip install --force-reinstall xgboost\n"
+            "See installation documentation for more details.\n"
+            f"Continuing with other models: {[m for m in classical_models if m != 'xgb']}",
+            UserWarning
+        )
+        # Remove xgb from the list
+        classical_models = [m for m in classical_models if m != 'xgb']
+    
+    # If no models remain after filtering, raise an error
+    if not classical_models:
+        raise ValueError("No valid classical models specified. Please provide at least one model from: 'rf', 'mlp', 'svc', 'lr', 'xgb'")
+    
     model_res = []
-    for method in ['rf', 'mlp', 'svc', 'lr', 'xgb']:
+    for method in classical_models:
         if method == 'rf':
             model = create_rf_model(args['seed'])
         elif method == 'svc':
@@ -185,8 +213,11 @@ def compute_pqk(X_train, X_test, y_train, y_test, args, model='PQK', data_key = 
             model = create_mlp_model(args['seed'])
         elif method == 'lr':
             model = create_lr_model(args['seed'])
-        else:
+        elif method == 'xgb':
             model = create_xgb_model(args['seed'])
+        else:
+            warnings.warn(f"Unknown model type '{method}' skipped. Valid options: 'rf', 'mlp', 'svc', 'lr', 'xgb'", UserWarning)
+            continue
         
         method_pqk = 'pqk_' + method
         print(method_pqk)
@@ -196,7 +227,7 @@ def compute_pqk(X_train, X_test, y_train, y_test, args, model='PQK', data_key = 
         hyperparameters = {
                             'feature_map': feature_map.__class__.__name__,
                             'feature_map_reps': reps,
-                            'entanglement' : entanglement,                        
+                            'entanglement' : entanglement,
                             'best_params': model.best_params_,
                             # Add other hyperparameters as needed
                             }

@@ -32,5 +32,3 @@ __all__ = [
     'generate_spirals_datasets',
     'generate_swiss_roll_datasets',
 ]
-
-# Made with Bob
