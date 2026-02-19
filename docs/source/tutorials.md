@@ -52,27 +52,60 @@ Explore QSage, an intelligent meta-learning system that predicts which machine l
 
 ### 4. Quantum Projection Learning (QPL)
 
-Learn about Quantum Projection Learning techniques and their applications in machine learning workflows.
+Learn about Quantum Projection Learning (QPL), a technique that combines quantum feature maps with multiple classical machine learning algorithms. This comprehensive tutorial demonstrates how to systematically evaluate quantum-enhanced features across different learners.
 
 <a href="tutorials/Quantum_Projection_Learning/QPL_example.html">📓 <strong>View Tutorial Notebook</strong></a>
 
-**Topics Covered:**
-- Quantum projection methods
+**What You'll Learn:**
+- Generate synthetic datasets with controlled complexity
+- Apply quantum feature maps to create quantum projections
+- Train multiple classical models (SVC, RF, XGBoost, MLP, LR) on quantum features
+- Compare quantum-enhanced vs. classical baseline performance
+- Visualize and analyze comprehensive performance metrics
+- Use QProfiler for automated QPL experiments
+
+**Key Concepts:**
+- Quantum projection methods and expectation value measurements
+- Ensemble learning with quantum features
+- Data complexity analysis for quantum advantage prediction
+- Systematic model comparison and evaluation
 - Integration with classical ML pipelines
-- Performance optimization
+
+**Workflow:**
+1. Generate or load classification datasets
+2. Configure QPL experiments via YAML files
+3. Apply quantum feature maps (ZZ, Pauli, etc.)
+4. Extract quantum projections from circuits
+5. Train 5+ classical models on quantum features
+6. Compare with classical baselines
+7. Analyze results and identify quantum advantages
 
 ---
 
-### 5. Projected Quantum Kernel (PQK)
+### 5. Projected Quantum Kernel (PQK) - Ovarian Cancer Survival Prediction
 
-Explore the Projected Quantum Kernel approach for quantum machine learning.
+Learn how to apply Projected Quantum Kernels (PQK) to real-world cancer genomics data for survival prediction. This advanced tutorial demonstrates quantum-enhanced machine learning on multi-omics ovarian cancer data from TCGA.
 
 <a href="tutorials/PQK%20-%20OV.html">📓 <strong>View Tutorial Notebook</strong></a>
 
-**Key Concepts:**
-- Quantum kernel methods
-- Kernel-based classification
-- Quantum advantage in kernel computation
+**What You'll Learn:**
+- Apply quantum feature maps to high-dimensional genomics data
+- Use PQK to create quantum feature representations
+- Compare quantum-enhanced vs. classical SVM performance
+- Work with multi-omics data (miRNA, methylation, gene expression)
+- Perform comprehensive hyperparameter tuning for quantum kernels
+- Evaluate quantum performance on real biomedical datasets
+
+**Dataset:**
+- Ovarian cancer (OV) multi-omics data from TCGA
+- 3-year survival prediction task
+- Four data modalities: miRNA, DNA methylation, gene expression, and integrated
+
+**Key Techniques:**
+- Quantum kernel methods with ZZ feature maps
+- Pairwise qubit entanglement strategies
+- PCA dimensionality reduction for quantum encoding
+- Stratified cross-validation for robust evaluation
 
 ---
 

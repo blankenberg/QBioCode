@@ -1,19 +1,31 @@
+# Virtual environments
 venv/
-docs/build/*
 .env/
 .env*
 
-__pychace__/*
+# Python build artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.whl
 
+# IDE
 .DS_Store
+.vscode/
+.idea/
 
-*.pyc
-
+# Documentation
+docs/build/*
 docs/outputdir/*
+
+# Project specific
 results/
 data/
-
-build/*
 
 # Tutorial generated outputs
 tutorial/**/ModelResults.csv
