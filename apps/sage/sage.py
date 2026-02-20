@@ -85,39 +85,100 @@ class QuantumSage():
         return predictions_df
 
 
-    def train_sub_sages(self, test_size=0.2, sage_type = 'random_forest'):
-
-        '''
-        This function trains the actual sage for each ML method that was tested previously.
-        It will train a sub-sage for each metric and each model.  The sub-sage will be trained on the features of the input data
-        and the corresponding metric for each model.  The sub-sage will be trained on a train-test split of the data, using either a random forest 
-        or a MLP regressor depending on the sage_type parameter.  The results of the training will be stored in the _results_subsages dictionary, which will have the following structure:
-        _results_subsages = {
-            'metric1': {
-                'model1': {
-                    'fit_model': <trained model>,
-                    'preds': <predictions on test set>,
-                    'y_test': <true values on test set>,
-                    'params': <model parameters>,
-                    'mae': <mean absolute error>,
-                    'mse': <mean squared error>,
-                    'rmse': <root mean squared error>,
-                    'r2': <R2 score>
-                },
-                ...
-            },
-            ...
-        }
-
-        This function will iterate over each metric and each model, and train the corresponding sub-sage, while printing the progress.
-
-        Args:
-            test_size (float): The proportion of the data to be used for the test set. Default is 0.2.
-            sage_type (str): The type of sage to be used. Can be 'random_forest' or 'mlp'. Default is 'random_forest'.
-
-        Returns:
-            None: The function does not return anything, it just trains the sub-sages and stores the results in the _results_subsages dictionary.  
-        '''
+    def train_sub_sages(self, test_size=0.2, sage_type='random_forest', n_iter=None, cv=5):
+        """
+        Train sub-sage predictors for each ML model and performance metric.
+        
+        This function trains regression models (Sage) that learn to predict
+        model performance based on data complexity features. A separate sub-sage
+        is trained for each combination of ML model and performance metric.
+        
+        Parameters
+        ----------
+        test_size : float, optional
+            Proportion of data to use for testing (0.0 to 1.0). Default is 0.2.
+        sage_type : str, optional
+            Type of regressor to use as Sage. Must be one of:
+            
+            - 'random_forest': Random Forest with hyperparameter tuning (default)
+            - 'mlp': Multi-Layer Perceptron with grid search
+            
+            Only ONE sage type can be selected per training run.
+            
+        n_iter : int, optional
+            For Random Forest: number of hyperparameter search iterations (default: 50).
+            For MLP: maximum number of training epochs (default: 1000).
+            If None, uses the default for the selected sage_type.
+        cv : int, optional
+            Number of cross-validation folds for hyperparameter evaluation.
+            Default is 5. Used by both Random Forest and MLP.
+        
+        Returns
+        -------
+        None
+            Results are stored in the internal ``_results_subsages`` dictionary with structure:
+            
+            .. code-block:: python
+            
+                {
+                    'metric1': {
+                        'model1': {
+                            'fit_model': <trained model>,
+                            'preds': <predictions on test set>,
+                            'y_test': <true values>,
+                            'params': <model parameters>,
+                            'mae': <mean absolute error>,
+                            'mse': <mean squared error>,
+                            'rmse': <root mean squared error>,
+                            'r2': <R² score>
+                        },
+                        ...
+                    },
+                    ...
+                }
+        
+        Raises
+        ------
+        ValueError
+            If sage_type is not 'random_forest' or 'mlp'.
+        
+        Notes
+        -----
+        The function iterates over all available metrics and models, training a
+        separate predictor for each combination. Progress is printed during training.
+        
+        Only one sage type can be used per training run. If you want to compare
+        Random Forest and MLP sages, you need to train them separately and compare
+        their results.
+        
+        Examples
+        --------
+        Train with Random Forest (default):
+        
+        >>> sage.train_sub_sages(test_size=0.2, sage_type='random_forest')
+        
+        Train with MLP:
+        
+        >>> sage.train_sub_sages(test_size=0.2, sage_type='mlp')
+        
+        Train with custom hyperparameter search:
+        
+        >>> sage.train_sub_sages(sage_type='random_forest', n_iter=100, cv=10)
+        
+        See Also
+        --------
+        _sage_random_forest : Random Forest Sage implementation
+        _sage_mlp : MLP Sage implementation
+        predict : Make predictions using trained Sages
+        """
+        # Validate sage_type parameter
+        valid_sage_types = ['random_forest', 'mlp']
+        if sage_type not in valid_sage_types:
+            raise ValueError(
+                f"Invalid sage_type '{sage_type}'. Must be one of {valid_sage_types}. "
+                f"Only one sage type can be selected per training run."
+            )
+        
         for metric in self._available_metrics:
             print(f"Working on {metric}")
 
@@ -131,62 +192,146 @@ class QuantumSage():
                 print(f"Working on {model}")
                 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state = self._seed)
 
-                # TODO: include the parameters that may be part of training or learning which parameters are best
-
                 if sage_type == 'random_forest':
-                    self._results_subsages[metric][model] = self._sage_random_forest(X_train, X_test, y_train, y_test)
+                    # Use default n_iter=50 for Random Forest if not specified
+                    rf_n_iter = n_iter if n_iter is not None else 50
+                    self._results_subsages[metric][model] = self._sage_random_forest(
+                        X_train, X_test, y_train, y_test, n_iter=rf_n_iter, cv=cv
+                    )
                 elif sage_type == 'mlp':
-                    self._results_subsages[metric][model] = self._sage_mlp(X_train, X_test, y_train, y_test)
-                else:
-                    return None
+                    # Use default n_iter=1000 for MLP if not specified
+                    mlp_n_iter = n_iter if n_iter is not None else 1000
+                    self._results_subsages[metric][model] = self._sage_mlp(
+                        X_train, X_test, y_train, y_test, n_iter=mlp_n_iter, cv=cv
+                    )
 
-    def _sage_mlp(self, X_train, X_test, y_train, y_test, n_iter = 50):
-
-        '''
-        This function performs a randomized search of the parameter space in order to find the best settings for the MLP
-        and then make a final prediction on the test set.  The randomize search is doing a 5 fold cross validation.
-        The MLPRegressor is trained with the best parameters found in the randomized search.
-        The function returns a dictionary containing the trained model, predictions, true values, parameters, and evaluation metrics.
-        The evaluation metrics include mean absolute error (mae), mean squared error (mse), root mean squared error (rmse), and R2 score (r2).
-        This function is used to train a sub-sage for the MLP model.
-        It is called by the train_sub_sages function and is not meant to be called directly by the user, and is designed to be used with the 
-        input data that has been preprocessed and split into training and test sets.
+    def _sage_mlp(self, X_train, X_test, y_train, y_test, n_iter=1000, cv=5):
+        """
+        Train a Multi-Layer Perceptron (MLP) regressor as a Sage predictor with hyperparameter tuning.
         
-        Args:
-            X_train (pd.DataFrame): Training features.
-            X_test (pd.DataFrame): Test features.
-            y_train (pd.Series): Training labels.
-            y_test (pd.Series): Test labels.
-            n_iter (int): Number of iterations for the randomized search. Default is 50.
+        This function performs a grid search over MLP hyperparameters to find the best
+        configuration, then makes predictions on the test set. The search uses cross-validation
+        to evaluate different parameter combinations. Early stopping is used to prevent
+        overfitting during training.
+        
+        The function is called internally by :meth:`train_sub_sages` and is not meant
+        to be called directly by users. It is designed to work with preprocessed data
+        that has been split into training and test sets.
+        
+        Parameters
+        ----------
+        X_train : pd.DataFrame
+            Training features (data complexity metrics).
+        X_test : pd.DataFrame
+            Test features (data complexity metrics).
+        y_train : pd.Series
+            Training labels (model performance values).
+        y_test : pd.Series
+            Test labels (model performance values).
+        n_iter : int, optional
+            Maximum number of training iterations (epochs) for the MLP. Default is 1000.
+            Training will run for at most this many iterations, but may stop earlier
+            if early stopping criteria are met (no improvement for 10 consecutive epochs).
+            Higher values allow more training time but take longer to run.
+            Lower values speed up training but may underfit if set too low.
+        cv : int, optional
+            Number of cross-validation folds for hyperparameter evaluation. Default is 5.
+            Each parameter combination is evaluated using k-fold cross-validation to
+            ensure robust performance estimates.
+        
+        Returns
+        -------
+        dict
+            Dictionary containing:
+            
+            - 'fit_model' : GridSearchCV
+                Trained MLP model with best parameters from grid search
+            - 'preds' : np.ndarray
+                Predictions on test set
+            - 'y_test' : pd.Series
+                True test labels
+            - 'params' : dict
+                Best hyperparameters found by grid search
+            - 'mae' : float
+                Mean Absolute Error on test set
+            - 'mse' : float
+                Mean Squared Error on test set
+            - 'rmse' : float
+                Root Mean Squared Error on test set
+            - 'r2' : float
+                R² score on test set
+        
+        Notes
+        -----
+        The hyperparameter search space includes:
+        
+        - hidden_layer_sizes: [(32, 10), (64, 32), (100,), (50, 25)]
+        - activation: ['relu', 'tanh']
+        - solver: ['adam', 'lbfgs']
+        - alpha: [0.0001, 0.001, 0.01] (L2 regularization)
+        - learning_rate: ['constant', 'adaptive']
+        
+        The MLP uses:
+        
+        - Early stopping with patience of 10 epochs (``n_iter_no_change=10``)
+        - Adaptive learning rate starting at 0.001
+        - Maximum iterations controlled by ``n_iter`` parameter
+        - Automatic batch size
+        - 10% validation split for early stopping
+        
+        **Interpretation of n_iter for MLP:**
+        
+        Unlike Random Forest where ``n_iter`` controls the number of hyperparameter
+        search iterations, for MLP it controls the **maximum number of training epochs**.
+        The actual training may stop earlier due to early stopping (if no improvement
+        for 10 consecutive epochs). This allows you to control the training time while
+        still benefiting from early stopping to prevent overfitting.
+        
+        See Also
+        --------
+        _sage_random_forest : Alternative Random Forest sub-sage
+        train_sub_sages : Main training function that calls this method
+        """
+        from sklearn.model_selection import GridSearchCV
 
-        Returns:
-            result (dict): A dictionary containing the trained model, predictions, true values, parameters, and evaluation metrics.
-        '''
+        # Define hyperparameter grid for MLP
+        param_grid = {
+            'hidden_layer_sizes': [(32, 10), (64, 32), (100,), (50, 25)],
+            'activation': ['relu', 'tanh'],
+            'solver': ['adam', 'lbfgs'],
+            'alpha': [0.0001, 0.001, 0.01],
+            'learning_rate': ['constant', 'adaptive']
+        }
 
-        param_distributions = {"hidden_layer_sizes": [1,50], 
-                               "activation": ["identity", 
-                               "logistic", "tanh", "relu"], 
-                               "solver": ["lbfgs", "sgd", "adam"], 
-                               "alpha": [0.00005,0.0005]}
+        # Initialize MLP with early stopping
+        mlp = MLPRegressor(
+            batch_size='auto',
+            learning_rate_init=0.001,
+            max_iter=n_iter,  # Use n_iter for maximum training iterations
+            random_state=self._seed,
+            n_iter_no_change=10,  # Fixed early stopping patience
+            early_stopping=True,
+            validation_fraction=0.1
+        )
 
-        #TODO: Parameter optimization
-
-        model = MLPRegressor(hidden_layer_sizes=(32,10), 
-                             activation='relu', 
-                             solver='adam',
-                             alpha=0, 
-                             batch_size='auto',
-                             learning_rate='adaptive', 
-                             learning_rate_init=0.001, 
-                             max_iter=1000, 
-                             random_state=self._seed, 
-                             n_iter_no_change=10)
+        # Initialize GridSearchCV with configurable cv parameter
+        mlp_grid = GridSearchCV(
+            estimator=mlp,
+            param_grid=param_grid,
+            cv=cv,
+            n_jobs=-1,
+            scoring='r2'
+        )
         
         # Train
-        model.fit(X_train, y_train)
-
-        preds = model.predict(X_test)
-        params = model.get_params()
+        X_train = X_train.astype(np.float64)
+        X_test = X_test.astype(np.float64)
+        X_train = X_train.replace([np.inf, -np.inf], np.nan).fillna(0)
+        X_test = X_test.replace([np.inf, -np.inf], np.nan).fillna(0)
+        
+        mlp_grid.fit(X_train, y_train)
+        preds = mlp_grid.predict(X_test)
+        params = mlp_grid.best_params_
 
         # Evaluate on held out
         mae = mean_absolute_error(y_test, preds)
@@ -195,40 +340,87 @@ class QuantumSage():
         r2 = r2_score(y_test, preds)
 
         result = {
-            'fit_model' : model,
-            'preds' : preds,
-            'y_test' : y_test,
-            'params' : params,
-            'mae' : mae,
-            'mse' : mse,
-            'rmse' : rmse,
-            'r2' : r2
+            'fit_model': mlp_grid,
+            'preds': preds,
+            'y_test': y_test,
+            'params': params,
+            'mae': mae,
+            'mse': mse,
+            'rmse': rmse,
+            'r2': r2
         }
 
         return result
 
 
-    def _sage_random_forest(self, X_train, X_test, y_train, y_test, n_iter = 50):
-
-        '''
-        This function performs a randomized search of the parameter space in order to find the best settings for the Random Forest
-        and then make a final prediction on the test set.  The randomized search is doing a 5 fold cross validation.
-        The RandomForestRegressor is trained with the best parameters found in the randomized search.
-        The function returns a dictionary containing the trained model, predictions, true values, parameters, and evaluation metrics.
-        The evaluation metrics include mean absolute error (mae), mean squared error (mse), root mean squared error (rmse), and R2 score (r2).
-        This function is used to train a sub-sage for the Random Forest model.  
-        It is called by the train_sub_sages function and is not meant to be called directly by the user, and is designed to be used with the
-        input data that has been preprocessed and split into training and test sets.
-
-        Args:
-            X_train (pd.DataFrame): Training features.
-            X_test (pd.DataFrame): Test features.
-            y_train (pd.Series): Training labels.
-            y_test (pd.Series): Test labels.
-            n_iter (int): Number of iterations for the randomized search. Default is 50.
-        Returns:
-            result (dict): A dictionary containing the trained model, predictions, true values, parameters, and evaluation metrics.
-        '''
+    def _sage_random_forest(self, X_train, X_test, y_train, y_test, n_iter=50, cv=5):
+        """
+        Train a Random Forest regressor as a sub-sage predictor with hyperparameter tuning.
+        
+        This function performs a randomized search over the hyperparameter space to find
+        the best Random Forest configuration, then makes predictions on the test set.
+        The search uses cross-validation to evaluate different parameter combinations.
+        
+        The function is called internally by :meth:`train_sub_sages` and is not meant
+        to be called directly by users. It is designed to work with preprocessed data
+        that has been split into training and test sets.
+        
+        Parameters
+        ----------
+        X_train : pd.DataFrame
+            Training features (data complexity metrics).
+        X_test : pd.DataFrame
+            Test features (data complexity metrics).
+        y_train : pd.Series
+            Training labels (model performance values).
+        y_test : pd.Series
+            Test labels (model performance values).
+        n_iter : int, optional
+            Number of iterations for randomized hyperparameter search. Default is 50.
+            Higher values explore more parameter combinations but take longer.
+        cv : int, optional
+            Number of cross-validation folds for hyperparameter evaluation. Default is 5.
+            Each parameter combination is evaluated using k-fold cross-validation.
+        
+        Returns
+        -------
+        dict
+            Dictionary containing:
+            
+            - 'fit_model' : RandomizedSearchCV
+                Trained Random Forest model with best parameters
+            - 'preds' : np.ndarray
+                Predictions on test set
+            - 'y_test' : pd.Series
+                True test labels
+            - 'params' : dict
+                Best hyperparameters found by randomized search
+            - 'mae' : float
+                Mean Absolute Error on test set
+            - 'mse' : float
+                Mean Squared Error on test set
+            - 'rmse' : float
+                Root Mean Squared Error on test set
+            - 'r2' : float
+                R² score on test set
+        
+        Notes
+        -----
+        The hyperparameter search space includes:
+        
+        - n_estimators: [100, 200, ..., 900] trees
+        - max_depth: [5, 6, ..., 19] maximum tree depth
+        - min_samples_split: [2, 3, ..., 9] minimum samples to split
+        - min_samples_leaf: [1, 2, 3, 4] minimum samples per leaf
+        - bootstrap: [True, False] whether to use bootstrap sampling
+        
+        The function handles infinite values and NaN by replacing them with 0.
+        
+        See Also
+        --------
+        _sage_mlp : Alternative MLP sub-sage
+        train_sub_sages : Main training function that calls this method
+        """
 
         param_distributions = {
             'n_estimators': np.arange(100, 1000, 100),
@@ -238,14 +430,14 @@ class QuantumSage():
             'bootstrap': [True, False]
         }
 
-        # Initialize the Random Forest Classifier
+        # Initialize the Random Forest Regressor
         rf = RandomForestRegressor(random_state=self._seed)
 
-        # Initialize RandomizedSearchCV
-        rf_random = RandomizedSearchCV(estimator=rf, 
-                                    param_distributions=param_distributions, 
-                                    n_iter=n_iter, 
-                                    cv=5, 
+        # Initialize RandomizedSearchCV with configurable cv parameter
+        rf_random = RandomizedSearchCV(estimator=rf,
+                                    param_distributions=param_distributions,
+                                    n_iter=n_iter,
+                                    cv=cv,
                                     random_state=self._seed,
                                     n_jobs=-1)
         
@@ -302,12 +494,20 @@ class QuantumSage():
                 y = self._results_subsages[metric][model]['y_test']
                 preds = pd.concat( [preds,
                                     pd.DataFrame( [[model]*len(p),[metric]*len(p),p,y], index = ['model', 'metric', 'pred', 'y_test'] ).transpose() ] )
-            results_df = pd.DataFrame(results, columns=['model','metric','mae','mse','rmse','r2'])
-
+        
+        # Create results DataFrame after collecting all results
+        if not results:
+            print("Warning: No results to plot. Train QSages first.")
+            return
+        
+        results_df = pd.DataFrame(results, columns=['model','metric','mae','mse','rmse','r2'])
         results_df = results_df.melt(id_vars=['model', 'metric'])
+        
         for metric in self._available_metrics:
             plt.figure(figsize=figsize)
-            sns.barplot(data = results_df[results_df['metric']==metric], x = 'variable', y = 'value', hue = 'model', hue_order=self._available_models)
+            # Filter data for current metric
+            metric_data = results_df[results_df['metric']==metric]
+            sns.barplot(data = metric_data, x = 'variable', y = 'value', hue = 'model', hue_order=self._available_models)  # type: ignore[arg-type]
             plt.title( "Predictive performance for each model for " + metric)
             plt.xlabel( "Metric")
             plt.ylabel( "Value" )
@@ -318,10 +518,11 @@ class QuantumSage():
             plt.show()
             plt.close()
 
+            # Filter predictions for current metric
             toPlot = preds[ preds['metric'] == metric ]
             plt.figure(figsize=figsize)
             plt.title( "Predictive performance for each model for " + metric)
-            sns.scatterplot( data = toPlot, x = 'y_test', y = 'pred', hue = 'model' )
+            sns.scatterplot( data = toPlot, x = 'y_test', y = 'pred', hue = 'model' )  # type: ignore[arg-type]
             plt.xlabel( "Actual")
             plt.ylabel( "Predicted" )
             plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
@@ -335,3 +536,229 @@ class QuantumSage():
     def set_seed(self, seed=42):
         self._seed = seed
 
+
+
+def main():
+    """
+    Command-line interface for QSage (Quantum Sage).
+    
+    This CLI allows users to train QSage models from the command line using CSV data files.
+    QSage learns relationships between dataset complexity measures and model performance,
+    enabling prediction of model performance on new datasets.
+    
+    Usage:
+        qsage --input data.csv --output results/ [options]
+    
+    The input CSV should contain:
+        - Dataset complexity features (# Features, # Samples, Intrinsic_Dimension, etc.)
+        - Performance metrics (accuracy, f1_score, auc)
+        - Metadata (Dataset, embeddings, model, etc.)
+    
+    QProfiler Integration:
+        QSage is designed to work directly with QProfiler output. Simply use the
+        compiled_results.csv file generated by QProfiler as input:
+        
+        # Step 1: Run QProfiler
+        qprofiler --config-name=config.yaml
+        
+        # Step 2: Train QSage with QProfiler output
+        qsage --input compiled_results.csv --output sage_results/
+    
+    Examples:
+        # Basic usage with QProfiler output
+        qsage --input compiled_results.csv --output sage_results/
+        
+        # With custom cross-validation and hyperparameter search
+        qsage --input compiled_results.csv --output results/ --cv 10 --n-iter 100
+        
+        # Train Random Forest sub-sages
+        qsage --input data.csv --output results/ --model-type rf --seed 42
+        
+        # Train MLP sub-sages
+        qsage --input data.csv --output results/ --model-type mlp --n-iter 2000
+    """
+    import argparse
+    import sys
+    
+    parser = argparse.ArgumentParser(
+        description='QSage: Quantum-inspired model selection oracle',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Train QSage on profiler results
+  qsage --input compiled_results.csv --output sage_results/
+  
+  # Train with specific metric and iterations
+  qsage --input data.csv --output results/ --metric accuracy --n-iter 200
+  
+  # Train with custom seed
+  qsage --input data.csv --output results/ --seed 123
+  
+For more information, see: https://ibm.github.io/QBioCode/apps/sage.html
+        """
+    )
+    
+    parser.add_argument(
+        '--input', '-i',
+        required=True,
+        help='Path to input CSV file containing dataset features and model performance metrics'
+    )
+    
+    parser.add_argument(
+        '--output', '-o',
+        required=True,
+        help='Output directory for results and plots'
+    )
+    
+    parser.add_argument(
+        '--seed', '-s',
+        type=int,
+        default=42,
+        help='Random seed for reproducibility (default: 42)'
+    )
+    
+    parser.add_argument(
+        '--model-type',
+        default='random_forest',
+        choices=['rf', 'mlp', 'random_forest'],
+        help='Type of sub-sage model to train: rf/random_forest (Random Forest) or mlp (MLP). '
+             'Default: random_forest. Only one type can be trained per run.'
+    )
+    
+    parser.add_argument(
+        '--test-size',
+        type=float,
+        default=0.2,
+        help='Proportion of data to use for testing (default: 0.2)'
+    )
+    
+    parser.add_argument(
+        '--n-iter',
+        type=int,
+        default=None,
+        help='For Random Forest: number of hyperparameter search iterations (default: 50). '
+             'For MLP: maximum training epochs (default: 1000)'
+    )
+    
+    parser.add_argument(
+        '--cv',
+        type=int,
+        default=5,
+        help='Number of cross-validation folds for hyperparameter evaluation (default: 5)'
+    )
+    
+    args = parser.parse_args()
+    
+    # Validate input file
+    if not os.path.exists(args.input):
+        print(f"Error: Input file '{args.input}' not found.", file=sys.stderr)
+        sys.exit(1)
+    
+    # Create output directory
+    os.makedirs(args.output, exist_ok=True)
+    
+    print("="*80)
+    print("QSage: Quantum Model Selection Oracle")
+    print("="*80)
+    print(f"Input file: {args.input}")
+    print(f"Output directory: {args.output}")
+    print(f"Test size: {args.test_size}")
+    print(f"Random seed: {args.seed}")
+    print(f"Model type: {args.model_type}")
+    print(f"Cross-validation folds: {args.cv}")
+    if args.n_iter is not None:
+        if args.model_type in ['rf', 'random_forest']:
+            print(f"Hyperparameter search iterations: {args.n_iter}")
+        else:
+            print(f"Maximum training epochs: {args.n_iter}")
+    print("="*80)
+    
+    # Load data
+    print("\nLoading data...")
+    try:
+        data = pd.read_csv(args.input)
+        print(f"Loaded {len(data)} rows with {len(data.columns)} columns")
+    except Exception as e:
+        print(f"Error loading data: {e}", file=sys.stderr)
+        sys.exit(1)
+    
+    # Initialize QSage
+    print("\nInitializing QSage...")
+    try:
+        sage = QuantumSage(data)
+        sage.set_seed(args.seed)
+        print(f"Available models: {sage._available_models}")
+        print(f"Available embeddings: {sage._available_embeddings}")
+        print(f"Available metrics: {sage._available_metrics}")
+    except Exception as e:
+        print(f"Error initializing QSage: {e}", file=sys.stderr)
+        sys.exit(1)
+    
+    # Train sub-sages
+    print(f"\nTraining sub-sages...")
+    try:
+        # Map CLI argument to sage_type
+        sage_type_map = {
+            'rf': 'random_forest',
+            'random_forest': 'random_forest',
+            'mlp': 'mlp'
+        }
+        sage_type = sage_type_map[args.model_type]
+        
+        print(f"  Training {sage_type} sub-sages...")
+        sage.train_sub_sages(
+            test_size=args.test_size,
+            sage_type=sage_type,
+            n_iter=args.n_iter,
+            cv=args.cv
+        )
+        
+        print("Training complete!")
+    except Exception as e:
+        print(f"Error training sub-sages: {e}", file=sys.stderr)
+        sys.exit(1)
+    
+    # Generate and save plots
+    print(f"\nGenerating plots...")
+    try:
+        output_file = os.path.join(args.output, 'sage_results.pdf')
+        sage.plot_results(saveFile=output_file)
+        print(f"Plots saved to: {output_file}")
+    except Exception as e:
+        print(f"Warning: Could not generate plots: {e}", file=sys.stderr)
+    
+    # Save results summary
+    print("\nSaving results summary...")
+    try:
+        results_summary = []
+        for metric in sage._available_metrics:
+            for model in sage._available_models:
+                if metric in sage._results_subsages and model in sage._results_subsages[metric]:
+                    result = sage._results_subsages[metric][model]
+                    results_summary.append({
+                        'model': model,
+                        'metric': metric,
+                        'mae': result['mae'],
+                        'mse': result['mse'],
+                        'rmse': result['rmse'],
+                        'r2': result['r2']
+                    })
+        
+        if results_summary:
+            results_df = pd.DataFrame(results_summary)
+            results_file = os.path.join(args.output, 'sage_summary.csv')
+            results_df.to_csv(results_file, index=False)
+            print(f"Results summary saved to: {results_file}")
+            print("\nResults Summary:")
+            print(results_df.to_string(index=False))
+        else:
+            print("Warning: No results to save")
+    except Exception as e:
+        print(f"Warning: Could not save results summary: {e}", file=sys.stderr)
+    
+    print("\n" + "="*80)
+    print("QSage training completed successfully!")
+    print("="*80)
+
+if __name__ == "__main__":
+    main()

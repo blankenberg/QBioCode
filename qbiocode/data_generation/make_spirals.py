@@ -1,3 +1,11 @@
+"""
+Generate synthetic n-dimensional spiral datasets for multi-class classification.
+
+This module creates multiple configurations of high-dimensional spiral datasets
+with varying sample sizes, noise levels, and dimensionality, useful for testing
+machine learning algorithms on complex non-linearly separable patterns.
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -5,10 +13,32 @@ import itertools
 import json
 import os
 
-np.random.seed(42)
 
 def make_spirals(n_samples=5000, n_classes=2, noise=0.3, dim=3):
-    """Generates an N-dimensional dataset of spirals."""
+    """
+    Generate an n-dimensional dataset of intertwined spirals.
+    
+    Creates spiral patterns in n-dimensional space where each class forms
+    a distinct spiral arm. Supports dimensions 3, 6, 9, and 12.
+    
+    Parameters
+    ----------
+    n_samples : int, default=5000
+        Total number of samples to generate.
+    n_classes : int, default=2
+        Number of spiral arms (classes).
+    noise : float, default=0.3
+        Standard deviation of Gaussian noise added to each dimension.
+    dim : int, default=3
+        Dimensionality of the output space (must be 3, 6, 9, or 12).
+    
+    Returns
+    -------
+    X : ndarray of shape (n_samples, dim)
+        Generated spiral data points.
+    y : ndarray of shape (n_samples,)
+        Class labels for each sample.
+    """
 
     X = []
     y = []
@@ -63,15 +93,63 @@ N_CLASSES = [2]
 NOISE = [0.3, 0.6, 0.9]
 DIM = [3, 6, 9, 12]
 
-def my_make_spirals(
+def generate_spirals_datasets(
     n_s=N_SAMPLES,
     n_c=N_CLASSES,
     n_n=NOISE,
     n_d=DIM,
     save_path=None,
+    random_state=42,
 ):
+    """
+    Generate multiple n-dimensional spiral datasets with varying parameters.
+    
+    Creates a series of high-dimensional datasets where samples form intertwined
+    spiral patterns, providing challenging non-linearly separable multi-class
+    classification problems. Each configuration varies the number of samples,
+    classes, noise level, and dimensionality.
+    
+    Parameters
+    ----------
+    n_s : list of int, default=range(100, 300, 50)
+        List of sample sizes to generate for each configuration.
+    n_c : list of int, default=[2]
+        List of class counts (number of spiral arms).
+    n_n : list of float, default=[0.3, 0.6, 0.9]
+        List of noise standard deviations to apply to the data.
+    n_d : list of int, default=[3, 6, 9, 12]
+        List of dimensionalities (must be 3, 6, 9, or 12).
+    save_path : str, optional
+        Directory path where datasets and configuration files will be saved.
+    random_state : int, default=42
+        Random seed for reproducibility.
+    
+    Returns
+    -------
+    None
+        Saves CSV files for each dataset configuration and a JSON file with
+        all configuration parameters.
+    
+    Notes
+    -----
+    - Each dataset is saved as 'spirals_data-{i}.csv' where i is the configuration number
+    - Configuration parameters are saved in 'dataset_config.json'
+    - The last column 'class' contains class labels
+    - Spiral patterns become increasingly complex in higher dimensions
+    
+    Examples
+    --------
+    >>> from qbiocode.data_generation import generate_spirals_datasets
+    >>> generate_spirals_datasets(n_s=[200], n_c=[2], n_n=[0.3], n_d=[3], save_path='data')
+    Generating spirals dataset...
+    """
     print("Generating spirals dataset...")
+    
+    np.random.seed(random_state)
 
+    if save_path is None:
+        save_path = 'spirals_data'
+    
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 

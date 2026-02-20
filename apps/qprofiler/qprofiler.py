@@ -13,6 +13,7 @@ import time
 import sys
 # ====== Hydra imports ======
 import hydra
+from hydra import compose, initialize_config_dir
 
 # ====== Scikit-learn imports ======
 from sklearn.model_selection import train_test_split
@@ -32,9 +33,13 @@ from qbiocode import get_embeddings
 from qbiocode import evaluate
 from qbiocode import model_run
 
+# Get the directory where this script is located for default config
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+DEFAULT_CONFIG_PATH = os.path.join(SCRIPT_DIR, 'configs')
+
 current_dir = os.getcwd()
 # Begin the main function and instatiate Hydra class
-@hydra.main(config_path='./configs/', config_name='config.yaml', version_base='1.1')
+@hydra.main(config_path=DEFAULT_CONFIG_PATH, config_name='config', version_base='1.1')
 def main(args):
     """
     Main function to run the qprofiler. It initializes logging, sets up the environment, and processes datasets.
@@ -81,7 +86,16 @@ def main(args):
         model_results = {}
         summary.update({'Dataset':file})
         model_results.update({'Dataset':file})
-        rawdata = pd.read_csv( os.path.join(path_to_input, file), sep=r'\t|,')
+        
+        # Load data with optional index column support
+        if args.get('index_col', False):
+            # First column contains row names/IDs
+            rawdata = pd.read_csv(os.path.join(path_to_input, file), sep=r'\t|,', index_col=0)
+            log.info(f"Loaded dataset with row names from first column")
+        else:
+            # Standard loading without index column
+            rawdata = pd.read_csv(os.path.join(path_to_input, file), sep=r'\t|,')
+        
         X = rawdata.iloc[:, :-1].to_numpy()
         y = rawdata.iloc[:,-1:].to_numpy()
         y_encoded = feature_encoding(y, feature_encoding='OrdinalEncoder')
@@ -89,22 +103,31 @@ def main(args):
         y_encoded = y_encoded.astype(int)
         y_map = dict(zip(y_encoded.astype(str), y.tolist()))
         summary.update({'label_mapping': y_map})
+        
+        # Check for binary classification
+        n_classes = len(np.unique(y_encoded))
+        if n_classes != 2:
+            log.warning(f"Dataset {file} has {n_classes} classes. QProfiler is currently optimized for binary classification.")
+            log.warning(f"Multi-class classification support is experimental. Results may vary.")
+            print(f"\n⚠️  WARNING: Dataset '{file}' has {n_classes} classes.")
+            print(f"   QProfiler is currently optimized for binary classification.")
+            print(f"   Multi-class support is experimental. Proceed with caution.\n")
 
         # call and run evaluation functions
-        X_scaled = scaler_fn(X, scaling='MinMaxScaler')
-        df_dataset = pd.DataFrame(X_scaled)
+        df_dataset = pd.DataFrame(X)
         raw_data_eval = evaluate(df_dataset, y_encoded, file)
         appended_raw_data_eval.append(raw_data_eval)
 
-        # create csv file storing the evaluation of the raw, unembedded data    
+        # create csv file storing the evaluation of the raw, unembedded data
         all_raw_data_evaluation = pd.concat(appended_raw_data_eval)
         all_raw_data_evaluation.to_csv('RawDataEvaluation.csv', index=False)
         
         # log info
         log.info(f"Started processing data set {file}")
+        log.info(f"Dataset has {n_classes} classes: {np.unique(y_encoded).tolist()}")
         
-        stratify = args['stratify']
-        test_size = args['test_size']    
+        use_stratify = args.get('stratify', [])
+        test_size = args['test_size']
         iter = 0
         # makes number of iterations an argument from config
         for iter in range(args['iter']):
@@ -112,8 +135,19 @@ def main(args):
             iter=iter+1
             # track iteration time
             iter_start_time = time.time()
-            X_train, X_test, y_train, y_test = train_test_split(X, y_encoded, stratify=y, test_size=test_size)
-            log.info(f"Begin processing iteration (split) {iter} of {args['iter']}")
+            
+            # Apply stratification based on config
+            # stratify can be: ['y'], ['Y'], or empty list/None for no stratification
+            if use_stratify and len(use_stratify) > 0:
+                X_train, X_test, y_train, y_test = train_test_split(
+                    X, y_encoded, stratify=y_encoded, test_size=test_size
+                )
+                log.info(f"Begin processing iteration (split) {iter} of {args['iter']} with stratified sampling")
+            else:
+                X_train, X_test, y_train, y_test = train_test_split(
+                    X, y_encoded, test_size=test_size
+                )
+                log.info(f"Begin processing iteration (split) {iter} of {args['iter']} without stratification")
             #Scale the features
             if 'True' in args['scaling']:
                 X_train = scaler_fn(X_train, scaling='MinMaxScaler')
@@ -186,3 +220,4 @@ def main(args):
 
 if __name__ == "__main__":
     main()
+

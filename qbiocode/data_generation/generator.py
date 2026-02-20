@@ -1,3 +1,10 @@
+"""
+Main data generation interface for QBioCode.
+
+This module provides a unified interface to generate various types of synthetic
+datasets for machine learning benchmarking and evaluation.
+"""
+
 ### Imports ###
 
 import qbiocode.data_generation.make_circles as circles
@@ -37,60 +44,121 @@ def generate_data(
         n_informative=N_INFORMATIVE,
         n_redundant=N_REDUNDANT,
         n_clusters_per_class=N_CLUSTERS_PER_CLASS,
-        weights=WEIGHTS
+        weights=WEIGHTS,
+        random_state=42,
 ):
     """
-    Main function to generate datasets using various methods.
+    Generate synthetic datasets for machine learning benchmarking.
+    
+    Unified interface to generate various types of synthetic datasets with
+    configurable parameters. Each dataset type creates multiple configurations
+    by varying the specified parameters.
+    
+    Parameters
+    ----------
+    type_of_data : str
+        Type of dataset to generate. Options: 'circles', 'moons', 'classes',
+        's_curve', 'spheres', 'spirals', 'swiss_roll'.
+    save_path : str
+        Directory path where datasets will be saved.
+    n_samples : list of int, default=range(100, 300, 20)
+        Sample sizes for dataset configurations.
+    noise : list of float, default=[0.1, 0.2, ..., 0.9]
+        Noise levels to apply.
+    hole : list of bool, default=[True, False]
+        Whether to include hole (for swiss_roll only).
+    n_classes : list of int, default=[2]
+        Number of classes (for spirals and classes).
+    dim : list of int, default=[3, 6, 9, 12]
+        Dimensionalities (for spheres and spirals).
+    rad : list of float, default=[3, 6, 9, 12]
+        Radii (for spheres only).
+    n_features : list of int, default=range(10, 60, 20)
+        Feature counts (for classes only).
+    n_informative : list of int, default=range(2, 8, 4)
+        Informative feature counts (for classes only).
+    n_redundant : list of int, default=range(2, 8, 4)
+        Redundant feature counts (for classes only).
+    n_clusters_per_class : list of int, default=range(1, 2, 3)
+        Clusters per class (for classes only).
+    weights : list of list of float, default=[[0.3, 0.7], [0.4, 0.6], [0.5, 0.5]]
+        Class weight distributions (for classes only).
+    random_state : int, default=42
+        Random seed for reproducibility.
+    
+    Returns
+    -------
+    None
+        Saves generated datasets to the specified path.
+    
+    Raises
+    ------
+    ValueError
+        If type_of_data is not one of the supported types.
+    
+    Examples
+    --------
+    >>> from qbiocode.data_generation import generate_data
+    >>> generate_data(type_of_data='circles', save_path='data/circles')
+    Generating circles dataset...
+    Dataset generation complete.
     """
 
-    if type_of_data is 'circles':
+    if type_of_data == 'circles':
         # Generate circles dataset
-        circles.my_make_classification(n_samples=n_samples, 
-                                       noise=noise, 
-                                       save_path=save_path)
-    elif type_of_data is 'moons':
+        circles.generate_circles_datasets(n_samples=n_samples,
+                                       noise=noise,
+                                       save_path=save_path,
+                                       random_state=random_state)
+    elif type_of_data == 'moons':
         # Generate moons dataset
-        moons.my_make_classification(n_samples=n_samples, 
+        moons.generate_moons_datasets(n_samples=n_samples,
                                      noise=noise,
-                                     save_path=save_path)
-    elif type_of_data is 'classes':
+                                     save_path=save_path,
+                                     random_state=random_state)
+    elif type_of_data == 'classes':
         # Generate higher-dimensional classification dataset
-        make_class.my_make_classification(n_samples=n_samples,
+        make_class.generate_classification_datasets(n_samples=n_samples,
                                             n_features=n_features,
                                             n_informative=n_informative,
                                             n_redundant=n_redundant,
                                             n_classes=n_classes,
                                             n_clusters_per_class=n_clusters_per_class,
                                             weights=weights,
-                                            save_path=save_path
+                                            save_path=save_path,
+                                            random_state=random_state
         )
-    elif type_of_data is 's_curve':
+    elif type_of_data == 's_curve':
         # Generate S-curve dataset
-        s_curve.my_make_s_curve(n_samples=n_samples,
+        s_curve.generate_s_curve_datasets(n_samples=n_samples,
                                 noise=noise,
-                                save_path=save_path
+                                save_path=save_path,
+                                random_state=random_state
                                 )
-    elif type_of_data is 'spheres':
+    elif type_of_data == 'spheres':
         # Generate spheres dataset
-        spheres.my_make_spheres(n_s=n_samples,
+        spheres.generate_spheres_datasets(n_s=n_samples,
                                 dim=dim,
                                 radius=rad,
-                                save_path=save_path
+                                save_path=save_path,
+                                random_state=random_state
                                 )
-    elif type_of_data is 'spirals':
+    elif type_of_data == 'spirals':
         # Generate spirals dataset
-        spirals.my_make_spirals(n_s=n_samples,
+        spirals.generate_spirals_datasets(n_s=n_samples,
                                 n_c=n_classes,
                                 n_n=noise,
                                 n_d=dim,
-                                save_path=save_path
+                                save_path=save_path,
+                                random_state=random_state
                                 )
-    elif type_of_data is 'swiss_roll':
+    elif type_of_data == 'swiss_roll':
         # Generate Swiss roll dataset
-        swiss_roll.my_make_swiss_roll(n_samples=n_samples,
+        swiss_roll.generate_swiss_roll_datasets(n_samples=n_samples,
                                     noise=noise,
                                     hole=hole,
-                                    save_path=save_path
+                                    save_path=save_path,
+                                    random_state=random_state
                                     )
     else:
         raise ValueError("Invalid type_of_data. Choose from 'circles', 'moons', 'classes', 's_curve', 'spheres', 'spirals', or 'swiss_roll'.")

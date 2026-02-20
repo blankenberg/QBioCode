@@ -12,12 +12,19 @@ sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('..'))
 sys.path.insert(0, os.path.abspath('../..'))
 
+# Mock imports for packages that have issues
+autodoc_mock_imports = ['xgboost']
+
 
 
 project = 'qbiocode'
 copyright = '2025 IBM Research' #, Bryan Raubenolt, Aritra Bose, Kahn Rhrissorrakrai, Filippo Utro, Akhil Mohan, Daniel Blankenberg, Laxmi Parida'
 author = 'Bryan Raubenolt, Aritra Bose, Kahn Rhrissorrakrai, Filippo Utro, Akhil Mohan, Daniel Blankenberg, Laxmi Parida'
 release = '0.0.1'
+
+# Documentation note
+html_show_sphinx = True
+html_show_copyright = True
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -33,6 +40,7 @@ extensions = [ "sphinx.ext.autodoc",
     "sphinx_rtd_theme",
      "nbsphinx",
    "myst_parser",
+   "sphinx_design",
   
   # "myst_nb"
 ]
@@ -46,7 +54,35 @@ exclude_patterns = ["build", "Thumbs.db", ".DS_Store"]
 
 
 html_static_path = ['_static']
+html_css_files = ['custom.css']  # Add custom CSS
 nbsphinx_execute = 'never' # O 'auto', 'always'. 'never'
+
+# nbsphinx configuration for better notebook rendering
+nbsphinx_prolog = """
+.. raw:: html
+
+    <style>
+        /* Improve notebook cell spacing */
+        div.nbinput.container,
+        div.nboutput.container {
+            margin-bottom: 1em;
+        }
+        
+        /* Better code cell styling */
+        div.highlight-ipython3 {
+            margin: 0.5em 0;
+        }
+        
+        /* Improve markdown cell rendering */
+        .nbinput + .nboutput {
+            margin-top: 0.5em;
+        }
+    </style>
+"""
+
+# Prompt for notebook execution
+nbsphinx_prompt_width = "0"
+
 
 # Impostazioni di MyST-Parser
 source_suffix = {
@@ -54,24 +90,30 @@ source_suffix = {
     '.md': 'markdown',
 }
 
+# nbsphinx automatically handles .ipynb files when included in extensions
+
 def run_apidoc(app):
     """Generate API documentation"""
-    import better_apidoc
+    try:
+        import better_apidoc
 
-    better_apidoc.APP = app
-    better_apidoc.main(
-        [
-            "better-apidoc",
-            "-t",
-            os.path.join(".", "_templates"),
-            "--force",
-            "--no-toc",
-            "--separate",
-            "-o",
-            os.path.join("source/", "api"),
-            os.path.join("..", "qbiocode"),
-        ]
-    )
+        better_apidoc.APP = app
+        better_apidoc.main(
+            [
+                "better-apidoc",
+                "-t",
+                os.path.join(".", "_templates"),
+                "--force",
+                "--no-toc",
+                "--separate",
+                "-o",
+                os.path.join("source/", "api"),
+                os.path.join("..", "qbiocode"),
+            ]
+        )
+    except Exception as e:
+        print(f"Warning: API documentation generation failed: {e}")
+        print("Continuing with build...")
 
 
 # -- Extension configuration -------------------------------------------------
@@ -112,20 +154,29 @@ html_theme_options = {
             "type": "fontawesome",
         }
     ],
-    "show_prev_next": False,
+    "show_prev_next": True,  # Enable prev/next navigation
     "navbar_start": ["navbar-logo"],
-    "navbar_end": ["navbar-icon-links"],
+    "navbar_center": ["navbar-nav"],  # Add navigation to center
+    "navbar_end": ["navbar-icon-links", "theme-switcher"],
     "header_links_before_dropdown": 8,
+    "navigation_depth": 3,  # Increased depth for better navigation
+    "show_toc_level": 2,  # Show 2 levels in TOC
+    "collapse_navigation": False,  # Keep navigation expanded
+    "navigation_with_keys": True,  # Enable keyboard navigation
 }
 
 html_context = {
     "default_mode": "light",
 }
 
+# Footer text
+rst_epilog = """
+.. |ai_note| replace:: *Portions of this documentation were generated with AI assistance.*
+"""
+
+# Enable sidebars for better navigation
 html_sidebars = {
-    "index": [],
-    "examples/index": [],
-    "**": [],
+    "**": ["sidebar-nav-bs", "sidebar-ethical-ads"],
 }
 
 # The name of the Pygments (syntax highlighting) style to use.

@@ -1,7 +1,0 @@
-Dataset,model,f1_score
-class_data-1.csv,dt,0.9547651618787049
-class_data-1.csv,svc,0.5764705882352941
-class_data-2.csv,dt,0.9120089786756455
-class_data-2.csv,svc,0.45
-class_data-3.csv,dt,0.5992571110757985
-class_data-3.csv,svc,0.7127757305905025

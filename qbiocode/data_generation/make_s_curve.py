@@ -1,3 +1,11 @@
+"""
+Generate synthetic 3D S-curve datasets for manifold learning tasks.
+
+This module creates multiple configurations of 3D S-curve datasets with
+varying sample sizes and noise levels, useful for testing dimensionality
+reduction and manifold learning algorithms.
+"""
+
 from sklearn.datasets import make_s_curve
 import pandas as pd
 import numpy as np
@@ -5,34 +13,61 @@ import itertools
 import json
 import os
 
-np.random.seed(42)
 
 # parameters to vary across the configurations
 N_SAMPLES = list(range(100, 300, 20))
 NOISE = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 
-def my_make_s_curve(
-    n_samples=N_SAMPLES, 
+def generate_s_curve_datasets(
+    n_samples=N_SAMPLES,
     noise=NOISE,
-    save_path=None
+    save_path=None,
+    random_state=42,
 ):
     """
-    This function generates a series of 'S-curve' data sets.  It uses itertools to generate a range of input arguments 
-    to pass into the sklearn make_s_curve function.  A data set is generated for each set of input arguments, which allows 
-    the function to produce a variety of different S-curves based on varying number of samples (n_samples) and noise.
+    Generate multiple 3D S-curve datasets with varying parameters.
     
-    Args:
-        n_samples: list of integers
-            The number of sample points on the Swiss Roll.
-        noise: list of floats
-            The standard deviation of the gaussian noise.
-
-    Returns:
-        df (pandas.DataFrame): Dataset in pandas dataframe with samples in the first column, features in the middle columns, and 
-                               labels in the last column.  
+    Creates a series of 3D datasets where samples lie on an S-shaped manifold,
+    a classic benchmark for manifold learning and dimensionality reduction algorithms.
+    Each configuration varies the number of samples and noise level.
+    
+    Parameters
+    ----------
+    n_samples : list of int, default=range(100, 300, 20)
+        List of sample sizes to generate for each configuration.
+    noise : list of float, default=[0.1, 0.2, ..., 0.9]
+        List of noise standard deviations to apply to the data.
+    save_path : str, optional
+        Directory path where datasets and configuration files will be saved.
+    random_state : int, default=42
+        Random seed for reproducibility.
+    
+    Returns
+    -------
+    None
+        Saves CSV files for each dataset configuration and a JSON file with
+        all configuration parameters.
+    
+    Notes
+    -----
+    - Each dataset is saved as 's_curve_data-{i}.csv' where i is the configuration number
+    - Configuration parameters are saved in 'dataset_config.json'
+    - The last column 'class' contains the position along the manifold (continuous values)
+    - S-curve is a standard benchmark for testing manifold learning algorithms
+    
+    Examples
+    --------
+    >>> from qbiocode.data_generation import generate_s_curve_datasets
+    >>> generate_s_curve_datasets(n_samples=[200], noise=[0.1], save_path='data')
+    Generating S Curve dataset...
     """
     print("Generating S Curve dataset...")
+    
+    np.random.seed(random_state)
 
+    if save_path is None:
+        save_path = 's_curve_data'
+    
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 
@@ -56,6 +91,7 @@ def my_make_s_curve(
             X, y = make_s_curve(
                 n_samples=n_s,
                 noise=n_n,
+                random_state=random_state,
             )
             # print("Configuration {}/{}: {}".format(count_configs, len(configurations), config))
             dataset = pd.DataFrame(X)

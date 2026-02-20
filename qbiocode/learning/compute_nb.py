@@ -13,9 +13,9 @@ from qbiocode.evaluation.model_evaluation import modeleval
 
 def compute_nb(X_train, X_test, y_train, y_test, args, verbose=False, model='Naive Bayes',  data_key = '', var_smoothing=1e-09):
     
-    """This function generates a model using a Random Forest (rf) Classifier method as implemented in scikit-learn 
-    (https://scikit-learn.org/1.5/modules/generated/sklearn.naive_bayes.GaussianNB.html). It takes in parameter
-    arguments specified in the config.yaml file, but will use the default parameters specified above if none are passed.
+    """This function generates a model using a Gaussian Naive Bayes (NB) Classifier method as implemented in
+    `scikit-learn <https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.GaussianNB.html>`_.
+    It takes in parameter arguments specified in the config.yaml file, but will use the default parameters specified above if none are passed.
     The model is trained on the training dataset and validated on the test dataset. The function returns the evaluation of the model 
     on the test dataset, including accuracy, AUC, F1 score, and the time taken to train and validate the model.
     This function is designed to be used in a supervised learning context, where the goal is to classify data points.
@@ -47,9 +47,9 @@ def compute_nb(X_train, X_test, y_train, y_test, args, verbose=False, model='Nai
 def compute_nb_opt(X_train, X_test, y_train, y_test, args, verbose=False, model='Naive Bayes', cv=5, 
                    var_smoothing = [1e-09, 1e-08, 1e-07, 1e-06, 1e-05, 1e-04, 1e-03, 1e-02]):
     
-    """ This function generates a model using a Random Forest (rf) Classifier method as implemented in scikit-learn 
-    (https://scikit-learn.org/1.5/modules/generated/sklearn.naive_bayes.GaussianNB.html). It takes in parameter
-    arguments specified in the config.yaml file, but will use the default parameters specified above if none are passed. The
+    """ This function generates a model using a Gaussian Naive Bayes (NB) Classifier method as implemented in
+    `scikit-learn <https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.GaussianNB.html>`_.
+    It takes in parameter arguments specified in the config.yaml file, but will use the default parameters specified above if none are passed. The
     combination of parameters that led to the best performance is saved and returned as best_params, which can then be used on similar
     datasets, without having to run the grid search.  The model is trained on the training dataset and validated on the test dataset. The function returns the evaluation of the model 
     on the test dataset, including accuracy, AUC, F1 score, and the time taken to train and validate the model across the grid search.

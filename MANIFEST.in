@@ -1,0 +1,33 @@
+# Include documentation files
+include README.md
+include LICENSE
+include CITATION.cff
+include CODE_OF_CONDUCT.md
+include CONTRIBUTING.md
+include requirements.txt
+
+# Include configuration files
+recursive-include apps/qprofiler/configs *.yaml
+recursive-include tutorial/QProfiler/configs *.yaml
+recursive-include tutorial/Quantum_Projection_Learning/configs *.yaml
+
+# Include documentation source files
+recursive-include docs/source *.rst *.md *.py
+recursive-include docs/source/_static *.png *.jpg *.svg *.gif
+recursive-include docs/source/_templates *.rst
+
+# Include tutorial notebooks
+recursive-include tutorial *.ipynb *.png *.csv *.pkl
+
+# Exclude build artifacts and cache
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude __pycache__
+global-exclude .DS_Store
+global-exclude *.so
+global-exclude .git*
+
+# Exclude test and development files
+prune tests
+prune .pytest_cache
+prune archive

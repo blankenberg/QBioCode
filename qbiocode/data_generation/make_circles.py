@@ -1,3 +1,11 @@
+"""
+Generate synthetic concentric circles datasets for binary classification tasks.
+
+This module creates multiple configurations of 2D concentric circles datasets
+with varying sample sizes and noise levels, useful for testing machine learning
+algorithms on non-linearly separable data.
+"""
+
 from sklearn.datasets import make_circles
 import pandas as pd
 import numpy as np
@@ -5,20 +13,60 @@ import itertools
 import json
 import os
 
-np.random.seed(42)
 
 # parameters to vary across the configurations
 N_SAMPLES = list(range(100, 300, 20))
 NOISE = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 
-def my_make_classification(
-    n_samples=N_SAMPLES, 
+def generate_circles_datasets(
+    n_samples=N_SAMPLES,
     noise=NOISE,
-    save_path='circles_data',
+    save_path=None,
+    random_state=42,
 ):
+    """
+    Generate multiple concentric circles datasets with varying parameters.
     
+    Creates a series of 2D datasets where samples form two concentric circles,
+    providing a classic non-linearly separable binary classification problem.
+    Each configuration varies the number of samples and noise level.
+    
+    Parameters
+    ----------
+    n_samples : list of int, default=range(100, 300, 20)
+        List of sample sizes to generate for each configuration.
+    noise : list of float, default=[0.1, 0.2, ..., 0.9]
+        List of noise standard deviations to apply to the data.
+    save_path : str, default='circles_data'
+        Directory path where datasets and configuration files will be saved.
+    random_state : int, default=42
+        Random seed for reproducibility.
+    
+    Returns
+    -------
+    None
+        Saves CSV files for each dataset configuration and a JSON file with
+        all configuration parameters.
+    
+    Notes
+    -----
+    - Each dataset is saved as 'circles_data-{i}.csv' where i is the configuration number
+    - Configuration parameters are saved in 'dataset_config.json'
+    - The last column 'class' contains binary labels (0 or 1)
+    
+    Examples
+    --------
+    >>> from qbiocode.data_generation import generate_circles_datasets
+    >>> generate_circles_datasets(n_samples=[100, 200], noise=[0.1, 0.3])
+    Generating circles dataset...
+    """
     print("Generating circles dataset...")
+    
+    np.random.seed(random_state)
 
+    if save_path is None:
+        save_path = 'circles_data'
+    
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 
@@ -40,6 +88,7 @@ def my_make_classification(
             X, y = make_circles(
                 n_samples=n_s,
                 noise=n_n,
+                random_state=random_state,
             )
             # print("Configuration {}/{}: {}".format(count_configs, len(configurations), config))
             dataset = pd.DataFrame(X)

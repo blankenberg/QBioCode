@@ -1,16 +1,48 @@
+# Virtual environments
 venv/
-docs/build/*
+env/
+.venv/
 .env/
-.env*
+*env/
+.*env/
+*.env
 
-__pychace__/*
+# Python build artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.whl
 
+# IDE
 .DS_Store
+.vscode/
+.idea/
 
-*.pyc
-
+# Documentation
+docs/build/*
 docs/outputdir/*
+
+# Project specific
 results/
 data/
 
-build/*
+# Tutorial generated outputs
+tutorial/**/ModelResults.csv
+tutorial/**/RawDataEvaluation.csv
+tutorial/**/compiled_*.csv
+tutorial/**/results.pkl
+tutorial/**/performance_summary_and_spearman_correlation_plots/
+tutorial/**/data/
+tutorial/**/*.png
+tutorial/**/.ipynb_checkpoints/
+tutorial/**/pqk_projections/
+
+# Keep tutorial notebooks and configs
+!tutorial/**/*.ipynb
+!tutorial/**/configs/
+!tutorial/**/configs/*.yaml

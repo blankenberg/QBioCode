@@ -21,9 +21,9 @@ def compute_rf(X_train, X_test, y_train, y_test, args, verbose=False, model='Ran
                class_weight=None, ccp_alpha=0.0, max_samples=None, monotonic_cst=None):
         
     """ 
-    This function generates a model using a Random Forest (rf) Classifier method as implemented in scikit-learn 
-    (https://scikit-learn.org/1.5/modules/generated/sklearn.ensemble.RandomForestClassifier.html). It takes in parameter
-    arguments specified in the config.yaml file, but will use the default parameters specified above if none are passed.  
+    This function generates a model using a Random Forest (RF) Classifier method as implemented in
+    `scikit-learn <https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html>`_.
+    It takes in parameter arguments specified in the config.yaml file, but will use the default parameters specified above if none are passed.
     The model is trained on the training dataset and validated on the test dataset. The function returns the evaluation of the model 
     on the test dataset, including accuracy, AUC, F1 score, and the time taken to train and validate the model.
     This function is designed to be used in a supervised learning context, where the goal is to classify data points.
@@ -78,9 +78,9 @@ def compute_rf_opt(X_train, X_test, y_train, y_test, args, verbose=False, cv=5, 
                    min_samples_leaf= [], min_samples_split= [], n_estimators= []):
     
     """ 
-    This function also generates a model using a Random Forest (rf) Classifier method as implemented in scikit-learn 
-    (https://scikit-learn.org/1.5/modules/generated/sklearn.ensemble.RandomForestClassifier.html). The difference here is that
-    this function runs a grid search. The range of the grid search for each parameter is specified in the config.yaml file. The
+    This function also generates a model using a Random Forest (RF) Classifier method as implemented in
+    `scikit-learn <https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestClassifier.html>`_.
+    The difference here is that this function runs a grid search. The range of the grid search for each parameter is specified in the config.yaml file. The
     combination of parameters that led to the best performance is saved and returned as best_params, which can then be used on similar
     datasets, without having to run the grid search.
     The model is trained on the training dataset and validated on the test dataset. The function returns the evaluation of the model 

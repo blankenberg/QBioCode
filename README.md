@@ -1,43 +1,263 @@
-# QBioCode is a suite of computational resources to support quantum applications in healthcare and life science data. 
+# QBioCode
 
- [![Minimum Python Version](https://img.shields.io/badge/Python-%3E=%203.9-blue)](https://www.python.org/downloads/) [![Maximum Python Version Tested](https://img.shields.io/badge/Python-%3C=%203.11-blueviolet)](https://www.python.org/downloads/) [![Supported Python Versions](https://img.shields.io/badge/Python-3.9%20%7C%203.10%20%7C%203.11-blue)](https://www.python.org/downloads/) [![GitHub Pages](https://img.shields.io/badge/docs-sphinx-blue)](https://ibm.github.io/QBioCode/)
- 
+**A comprehensive suite of computational resources for quantum machine learning applications in healthcare and life sciences.**
+
+[![Minimum Python Version](https://img.shields.io/badge/Python-%3E=%203.9-blue)](https://www.python.org/downloads/) [![Maximum Python Version Tested](https://img.shields.io/badge/Python-%3C=%203.12-blueviolet)](https://www.python.org/downloads/) [![Supported Python Versions](https://img.shields.io/badge/Python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-blue)](https://www.python.org/downloads/) [![GitHub Pages](https://img.shields.io/badge/docs-sphinx-blue)](https://ibm.github.io/QBioCode/)
+
 <img src="docs/source/img/QBioCode_logo.png" width="300" />
 
-QBioCode has been tested and is compatible with Python versions 3.9, 3.10, and 3.11. While it might work on other versions, these are the officially supported and tested ones.
+QBioCode provides tools for benchmarking quantum and classical machine learning models, analyzing data complexity, and making informed model selection decisions for healthcare and life science applications.
 
-## Getting Started
+## 🌟 Key Features
 
-### Prerequisites
+- **QProfiler**: Automated ML benchmarking with data complexity analysis
+- **QSage**: Meta-learning tool for intelligent model selection
+- **Data Generation**: Create artificial datasets with controlled complexity
+- **Quantum ML Support**: QSVC, PQK, VQC, QNN implementations
+- **Classical ML Baselines**: RF, SVM, LR, DT, NB, MLP, XGBoost
+- **Comprehensive Documentation**: Detailed tutorials and API reference
 
-Before you can run this project, you need to have python installed on your system. Please follow the documentation provided [here](https://ibm.github.io/QBioCode/installation.html).
+## 📋 Requirements
 
-## Apps
+QBioCode has been tested and is compatible with Python versions **3.9, 3.10, 3.11, and 3.12**.
 
-The **QBioCode** framework allows for the development of several applications for analyzing HCLS data. Here is a list of applications developed so far:
+## 🚀 Quick Start
 
-- [QProfiler](https://ibm.github.io/QBioCode/apps/profiler.html) utilizes a novel CML and QML model profiling system based on various data complexity measures on the original data as well as linear and non-linear lower-dimensional embeddings of the data. Details can be found [here](https://ibm.github.io/QBioCode/apps/profiler.html)
+### Installation
 
-- QSage guides model selection based on the input data complexity metrics and model performance across various datasets. It allows the user to rank CML and QML models for an unseen dataset.
+```bash
+# Clone the repository
+git clone https://github.com/IBM/QBioCode.git
+cd QBioCode
 
-## Tutorials
+# Create virtual environment
+python -m venv .env
+source .env/bin/activate  # On Windows: .env\Scripts\activate
 
-We have provided tutorial notebooks on:
+# Install QBioCode
+pip install -e .
 
-- QProfiler usage including artificial data generation
+# Install with apps support (QProfiler, QSage)
+pip install -e ".[apps]"
+```
 
-- QSage usage to train model selection tool
+**macOS Users:** XGBoost requires OpenMP. Install it using Homebrew:
+```bash
+brew install libomp
+pip install --force-reinstall xgboost
+```
 
-- Quantum Projection Learning execution with classical baseline comparisons.
+For detailed installation instructions, see the [Installation Guide](https://ibm.github.io/QBioCode/installation.html).
 
-## Authors
+### Basic Usage
 
-Contributors and contact info:
+```python
+import qbiocode as qbc
 
-* Bryan Raubenolt (raubenb@ccf.org)
-* Aritra Bose (a.bose@ibm.com)
-* Kahn Rhrissorrakrai (krhriss@us.ibm.com)
-* Filippo Utro (futro@us.ibm.com)
-* Akhil Mohan (mohana2@ccf.org)
-* Daniel Blankenberg (blanked2@ccf.org)
-* Laxmi Parida (parida@us.ibm.com)
+# Generate artificial data
+qbc.generate_data(
+    type_of_data='moons',
+    save_path='data/moons',
+    n_samples=[100, 200],
+    noise=[0.1, 0.2],
+    random_state=42
+)
+
+# Run QProfiler
+from apps.qprofiler import qprofiler
+import yaml
+
+config = yaml.safe_load(open('configs/config.yaml'))
+qprofiler.main(config)
+```
+
+## 📚 Applications
+
+### QProfiler
+
+**Automated ML Benchmarking with Data Complexity Analysis**
+
+QProfiler provides a comprehensive benchmarking pipeline that:
+- Evaluates both classical and quantum ML models
+- Computes 15+ data complexity metrics
+- Correlates model performance with data characteristics
+- Generates detailed performance reports and visualizations
+
+**Usage:**
+```bash
+# Command line
+qprofiler --config configs/config.yaml
+
+# Python API
+from apps.qprofiler import qprofiler
+qprofiler.main(config)
+```
+
+[📖 QProfiler Documentation](https://ibm.github.io/QBioCode/apps/profiler.html) | [📓 Tutorial](tutorial/QProfiler/example_qprofiler.ipynb)
+
+### QSage
+
+**Intelligent Model Selection via Meta-Learning**
+
+QSage uses surrogate models trained on extensive benchmarking data to:
+- Predict model performance without running experiments
+- Recommend best models based on dataset characteristics
+- Save computational resources
+- Provide interpretable predictions
+
+**Usage:**
+```bash
+# Command line
+qsage --data your_data.csv --output predictions.csv
+
+# Python API
+from apps.sage.sage import QuantumSage
+sage = QuantumSage(data=benchmark_df, features=features, metrics=metrics)
+predictions = sage.predict(new_dataset_features)
+```
+
+[📖 QSage Documentation](https://ibm.github.io/QBioCode/apps/sage.html) | [📓 Tutorial](tutorial/QSage/qsage.ipynb)
+
+## 📖 Tutorials
+
+Comprehensive Jupyter notebook tutorials are available:
+
+### 1. [Artificial Data Generation](tutorial/Artificial_data_generation/example_data_generation.ipynb)
+Learn how to create synthetic datasets with controlled properties:
+- 2D manifolds (circles, moons, spirals)
+- 3D manifolds (swiss_roll, s_curve, spheres)
+- High-dimensional classification data
+- Customizable complexity parameters
+
+### 2. [QProfiler Tutorial](tutorial/QProfiler/example_qprofiler.ipynb)
+Step-by-step guide to benchmarking ML models:
+- Data generation and preparation
+- Configuration setup
+- Running QProfiler
+- Analyzing results and visualizations
+- Understanding data complexity metrics
+
+### 3. [QSage Tutorial](tutorial/QSage/qsage.ipynb)
+Learn to use meta-learning for model selection:
+- Loading pre-trained QSage models
+- Making predictions on new datasets
+- Analyzing prediction accuracy
+- Understanding feature importance
+
+### 4. [Quantum Projection Learning](tutorial/Quantum_Projection_Learning/QPL_example.ipynb)
+Advanced quantum ML techniques with classical baselines.
+
+## 🔧 Core Modules
+
+### Data Generation
+```python
+import qbiocode as qbc
+
+# Generate various dataset types
+qbc.generate_data(type_of_data='circles', ...)
+qbc.generate_data(type_of_data='moons', ...)
+qbc.generate_data(type_of_data='classes', ...)
+```
+
+### Machine Learning Models
+
+**Classical Models:**
+- Random Forest (RF)
+- Support Vector Machine (SVM)
+- Logistic Regression (LR)
+- Decision Tree (DT)
+- Naive Bayes (NB)
+- Multi-Layer Perceptron (MLP)
+- XGBoost
+
+**Quantum Models:**
+- Quantum Support Vector Classifier (QSVC)
+- Projected Quantum Kernel (PQK)
+- Variational Quantum Classifier (VQC)
+- Quantum Neural Network (QNN)
+
+### Embeddings
+- PCA, LLE, Isomap, Spectral Embedding
+- UMAP, NMF
+- Autoencoder
+
+### Evaluation
+- Model performance metrics (accuracy, F1, AUC)
+- Data complexity analysis
+- Correlation studies
+
+## 🛠️ Utilities
+
+### QML Config Generation
+
+Generate configuration files for quantum model hyperparameter tuning:
+
+```python
+from qbiocode.utils import generate_qml_experiment_configs
+
+num_configs, used_files = generate_qml_experiment_configs(
+    template_config_path='configs/config.yaml',
+    output_dir='configs/qml_gridsearch',
+    data_dirs=['data/my_datasets'],
+    qmethods=['qnn', 'vqc', 'qsvc'],
+    reps=[1, 2],
+    n_components=[5, 10],
+    embeddings=['none', 'pca', 'isomap']
+)
+```
+
+## 📊 Documentation
+
+Full documentation is available at: **[https://ibm.github.io/QBioCode/](https://ibm.github.io/QBioCode/)**
+
+- [Installation Guide](https://ibm.github.io/QBioCode/installation.html)
+- [API Reference](https://ibm.github.io/QBioCode/api/qbiocode.html)
+- [Tutorials](https://ibm.github.io/QBioCode/tutorials.html)
+- [Background](https://ibm.github.io/QBioCode/background.html)
+
+## 🤝 Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+## 📄 License
+
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+
+## 📝 Citation
+
+If you use QBioCode in your research, please cite:
+
+```bibtex
+@software{qbiocode2024,
+  title = {QBioCode: Quantum Machine Learning for Healthcare and Life Sciences},
+  author = {Raubenolt, Bryan and Bose, Aritra and Rhrissorrakrai, Kahn and 
+            Utro, Filippo and Mohan, Akhil and Blankenberg, Daniel and Parida, Laxmi},
+  year = {2024},
+  url = {https://github.com/IBM/QBioCode}
+}
+```
+
+See [CITATION.cff](CITATION.cff) for more details.
+
+## 👥 Authors
+
+**Core Contributors:**
+
+- Bryan Raubenolt (raubenb@ccf.org) - Cleveland Clinic
+- Aritra Bose (a.bose@ibm.com) - IBM Research
+- Kahn Rhrissorrakrai (krhriss@us.ibm.com) - IBM Research
+- Filippo Utro (futro@us.ibm.com) - IBM Research
+- Akhil Mohan (mohana2@ccf.org) - Cleveland Clinic
+- Daniel Blankenberg (blanked2@ccf.org) - Cleveland Clinic
+- Laxmi Parida (parida@us.ibm.com) - IBM Research
+
+## 📞 Support
+
+For questions, issues, or feature requests:
+- Open an issue on [GitHub](https://github.com/IBM/QBioCode/issues)
+- Check the [documentation](https://ibm.github.io/QBioCode/)
+- Contact the authors
+
+---
+
+**QBioCode** - Advancing quantum machine learning for healthcare and life sciences 🧬⚛️

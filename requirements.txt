@@ -32,3 +32,5 @@ nbsphinx
 myst_nb
 furo
 pydata-sphinx-theme
+pandoc
+sphinx-design

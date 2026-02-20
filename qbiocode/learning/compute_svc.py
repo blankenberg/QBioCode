@@ -15,9 +15,9 @@ def compute_svc(X_train, X_test, y_train, y_test, args, model='SVC', data_key = 
                 degree=3, gamma='scale', coef0=0.0, shrinking=True, probability=False, tol=0.001, cache_size=200, 
                 class_weight=None, verbose=False, max_iter=-1, decision_function_shape='ovr', break_ties=False, random_state=None):
         
-    """ This function generates a model using a Support Vector Classifier (svc) method as implemented in scikit-learn 
-    (https://scikit-learn.org/1.5/modules/generated/sklearn.svm.SVC.html). It takes in parameter
-    arguments specified in the config.yaml file, but will use the default parameters specified above if none are passed.
+    """ This function generates a model using a Support Vector Classifier (SVC) method as implemented in
+    `scikit-learn <https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html>`_.
+    It takes in parameter arguments specified in the config.yaml file, but will use the default parameters specified above if none are passed.
     The model is trained on the training dataset and validated on the test dataset.  The model is trained on the training dataset and validated on the test dataset. 
     The function returns the evaluation of the model on the test dataset, including accuracy, AUC, F1 score, and the time taken to train and validate the model.
     This function is designed to be used in a supervised learning context, where the goal is to classify data points.
@@ -64,9 +64,9 @@ def compute_svc(X_train, X_test, y_train, y_test, args, model='SVC', data_key = 
 def compute_svc_opt(X_train, X_test, y_train, y_test, args, verbose=False, cv=5, model='SVC',
                     C=[], gamma=[], kernel=[]):
         
-    """ This function generates a model using a Support Vector Classifier (svc) method as implemented in scikit-learn 
-    (https://scikit-learn.org/1.5/modules/generated/sklearn.svm.SVC.html). It takes in parameter
-    arguments specified in the config.yaml file, but will use the default parameters specified above if none are passed. The
+    """ This function generates a model using a Support Vector Classifier (SVC) method as implemented in
+    `scikit-learn <https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html>`_.
+    It takes in parameter arguments specified in the config.yaml file, but will use the default parameters specified above if none are passed. The
     combination of parameters that led to the best performance is saved and returned as best_params, which can then be used on similar
     datasets, without having to run the grid search.
     The model is trained on the training dataset and validated on the test dataset.  The model is trained on the training dataset and validated on the test dataset. 

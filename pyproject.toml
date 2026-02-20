@@ -1,0 +1,150 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qbiocode"
+dynamic = ["version", "dependencies"]
+description = "A comprehensive suite of computational resources for quantum computing applications in healthcare and life science data analysis"
+readme = "README.md"
+requires-python = ">=3.9,<3.13"
+license = {text = "Apache License 2.0"}
+authors = [
+    {name = "Bryan Raubenolt", email = "raubenb@ccf.org"},
+    {name = "Aritra Bose", email = "a.bose@ibm.com"},
+    {name = "Kahn Rhrissorrakrai", email = "krhriss@us.ibm.com"},
+    {name = "Filippo Utro", email = "futro@us.ibm.com"},
+    {name = "Akhil Mohan", email = "mohana2@ccf.org"},
+    {name = "Daniel Blankenberg", email = "blanked2@ccf.org"},
+    {name = "Laxmi Parida", email = "parida@us.ibm.com"},
+]
+maintainers = [
+    {name = "IBM Research"},
+]
+keywords = [
+    "quantum machine learning",
+    "quantum computing",
+    "qiskit",
+    "bioinformatics",
+    "healthcare",
+    "life sciences",
+    "omics",
+    "genomics",
+    "proteomics",
+    "metabolomics",
+    "data complexity",
+    "model profiling",
+    "model selection",
+    "oracle",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Healthcare Industry",
+    "Intended Audience :: Developers",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3 :: Only",
+    "Operating System :: OS Independent",
+    "Natural Language :: English",
+]
+
+[project.urls]
+Homepage = "https://github.com/IBM/qbiocode"
+Documentation = "https://ibm.github.io/QBioCode/"
+Repository = "https://github.com/IBM/qbiocode"
+"Bug Tracker" = "https://github.com/IBM/qbiocode/issues"
+
+[project.optional-dependencies]
+apps = [
+    "hydra-core",
+    "joblib",
+]
+docs = [
+    "sphinx",
+    "sphinx-autodoc-typehints",
+    "sphinx_rtd_theme",
+    "myst_parser",
+    "better_apidoc",
+    "nbsphinx",
+    "myst_nb",
+    "furo",
+    "pydata-sphinx-theme",
+    "pandoc",
+    "sphinx-design",
+]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "black>=23.0",
+    "flake8>=6.0",
+    "mypy>=1.0",
+]
+all = [
+    "hydra-core",
+    "joblib",
+    "sphinx",
+    "sphinx-autodoc-typehints",
+    "sphinx_rtd_theme",
+    "myst_parser",
+    "better_apidoc",
+    "nbsphinx",
+    "myst_nb",
+    "furo",
+    "pydata-sphinx-theme",
+    "pandoc",
+    "sphinx-design",
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "black>=23.0",
+    "flake8>=6.0",
+    "mypy>=1.0",
+]
+
+[project.scripts]
+qprofiler = "apps.qprofiler.qprofiler:main"
+qprofiler-batch = "apps.qprofiler.qprofiler_batchmode:main"
+qsage = "apps.sage.sage:main"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["qbiocode*", "apps*"]
+exclude = ["tests*", "docs*", "archive*"]
+
+[tool.setuptools.dynamic]
+version = {attr = "qbiocode.version.__version__"}
+dependencies = {file = ["requirements-base.txt"]}
+
+[tool.setuptools.package-data]
+qbiocode = ["py.typed"]
+"apps.qprofiler" = ["configs/*.yaml"]
+
+[tool.black]
+line-length = 100
+target-version = ['py39', 'py310', 'py311', 'py312']
+include = '\.pyi?$'
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --cov=qbiocode --cov-report=html --cov-report=term"
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true

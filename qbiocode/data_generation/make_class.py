@@ -1,3 +1,11 @@
+"""
+Generate synthetic high-dimensional classification datasets.
+
+This module creates multiple configurations of multi-class classification datasets
+with varying dimensionality, feature characteristics, and class distributions,
+useful for testing machine learning algorithms on high-dimensional data.
+"""
+
 from sklearn.datasets import make_classification
 import pandas as pd
 import numpy as np
@@ -8,8 +16,6 @@ import os
 
 dataset_config = {}
 
-np.random.seed(42)
-
 # parameters to vary across the configurations
 N_SAMPLES = list(range(100, 300, 50))
 N_FEATURES = list(range(10,60,10))
@@ -19,18 +25,75 @@ N_CLASSES = list(range(2, 4, 6))
 N_CLUSTERS_PER_CLASS = list(range(1, 2, 3))
 WEIGHTS = [[0.3, 0.7], [0.4, 0.6], [0.5, 0.5]]
 
-def my_make_classification(
-    n_samples, 
-    n_features, 
-    n_informative, 
+def generate_classification_datasets(
+    n_samples,
+    n_features,
+    n_informative,
     n_redundant,
     n_classes,
     n_clusters_per_class,
     weights,
-    save_path=None
+    save_path=None,
+    random_state=42,
 ):
+    """
+    Generate multiple high-dimensional classification datasets with varying parameters.
+    
+    Creates a series of synthetic datasets for multi-class classification problems
+    with configurable feature characteristics including informative features,
+    redundant features, and class distributions.
+    
+    Parameters
+    ----------
+    n_samples : list of int
+        List of sample sizes to generate for each configuration.
+    n_features : list of int
+        List of total feature counts (must be >= n_informative + n_redundant).
+    n_informative : list of int
+        List of informative feature counts that are useful for prediction.
+    n_redundant : list of int
+        List of redundant feature counts (linear combinations of informative features).
+    n_classes : list of int
+        List of class counts for multi-class classification.
+    n_clusters_per_class : list of int
+        List of cluster counts per class.
+    weights : list of list of float
+        List of class weight distributions (must sum to 1.0).
+    save_path : str, optional
+        Directory path where datasets and configuration files will be saved.
+    random_state : int, default=42
+        Random seed for reproducibility.
+    
+    Returns
+    -------
+    None
+        Saves CSV files for each dataset configuration and a JSON file with
+        all configuration parameters.
+    
+    Notes
+    -----
+    - Each dataset is saved as 'class_data-{i}.csv' where i is the configuration number
+    - Configuration parameters are saved in 'dataset_config.json'
+    - The last column 'class' contains class labels
+    - Only valid configurations where (n_informative + n_redundant) <= n_features are generated
+    
+    Examples
+    --------
+    >>> from qbiocode.data_generation import generate_classification_datasets
+    >>> generate_classification_datasets(
+    ...     n_samples=[100], n_features=[20], n_informative=[5],
+    ...     n_redundant=[2], n_classes=[2], n_clusters_per_class=[1],
+    ...     weights=[[0.5, 0.5]], save_path='data'
+    ... )
+    Generating classes dataset...
+    """
     print("Generating classes dataset...")
+    
+    np.random.seed(random_state)
 
+    if save_path is None:
+        save_path = 'class_data'
+    
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 
@@ -56,6 +119,7 @@ def my_make_classification(
                     n_classes=n_cla,
                     n_clusters_per_class=n_clu,
                     weights=weights,
+                    random_state=random_state,
                 )
                 # print("Configuration {}/{}: {}".format(count_configs, len(configurations), config))
                 dataset = pd.DataFrame(X)

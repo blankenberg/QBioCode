@@ -1,3 +1,11 @@
+"""
+Generate synthetic 3D Swiss roll datasets for manifold learning tasks.
+
+This module creates multiple configurations of 3D Swiss roll datasets with
+varying sample sizes, noise levels, and hole configurations, useful for testing
+dimensionality reduction and manifold learning algorithms.
+"""
+
 from sklearn.datasets import make_swiss_roll
 import pandas as pd
 import numpy as np
@@ -5,39 +13,66 @@ import itertools
 import json
 import os
 
-np.random.seed(42)
 
 # parameters to vary across the configurations
 N_SAMPLES = list(range(100, 300, 20))
 NOISE = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 HOLE = [True, False]
 
-def my_make_swiss_roll(
-    n_samples=N_SAMPLES, 
+def generate_swiss_roll_datasets(
+    n_samples=N_SAMPLES,
     noise=NOISE,
     hole=HOLE,
-    save_path=None
+    save_path=None,
+    random_state=42,
 ):
     """
-    This function generates a series of 'swiss roll' data sets.  It uses itertools to generate a range of input arguments 
-    to pass into the sklearn make_swiss_roll function.  A data set is generated for each set of input arguments, which allows 
-    the function to produce a variety of different swiss rolls based on varying number of samples (n_samples), noise, and whether or not
-    the swiss roll has a 'hole' in it.
+    Generate multiple 3D Swiss roll datasets with varying parameters.
     
-    Args:
-        n_samples: list of integers
-            The number of sample points on the Swiss Roll.
-        noise: list of floats
-            The standard deviation of the gaussian noise.
-        hole: list of bools
-            If True generates the swiss roll with hole dataset.
-
-    Returns:
-        df (pandas.DataFrame): Dataset in pandas dataframe with samples in the first column, features in the middle columns, and 
-                               labels in the last column.    
+    Creates a series of 3D datasets where samples lie on a Swiss roll manifold,
+    a classic benchmark for manifold learning and dimensionality reduction algorithms.
+    Each configuration varies the number of samples, noise level, and whether the
+    roll has a hole in the center.
+    
+    Parameters
+    ----------
+    n_samples : list of int, default=range(100, 300, 20)
+        List of sample sizes to generate for each configuration.
+    noise : list of float, default=[0.1, 0.2, ..., 0.9]
+        List of noise standard deviations to apply to the data.
+    hole : list of bool, default=[True, False]
+        List of boolean values indicating whether to generate Swiss roll with hole.
+    save_path : str, optional
+        Directory path where datasets and configuration files will be saved.
+    random_state : int, default=42
+        Random seed for reproducibility.
+    
+    Returns
+    -------
+    None
+        Saves CSV files for each dataset configuration and a JSON file with
+        all configuration parameters.
+    
+    Notes
+    -----
+    - Each dataset is saved as 'swiss_roll_data-{i}.csv' where i is the configuration number
+    - Configuration parameters are saved in 'dataset_config.json'
+    - The last column 'class' contains the position along the manifold (continuous values)
+    - Swiss roll is a standard benchmark for testing manifold learning algorithms
+    
+    Examples
+    --------
+    >>> from qbiocode.data_generation import generate_swiss_roll_datasets
+    >>> generate_swiss_roll_datasets(n_samples=[200], noise=[0.1], hole=[False], save_path='data')
+    Generating swiss roll dataset...
     """
     print("Generating swiss roll dataset...")
+    
+    np.random.seed(random_state)
 
+    if save_path is None:
+        save_path = 'swiss_roll_data'
+    
     if not os.path.exists(save_path):
         os.makedirs(save_path)
 
@@ -61,7 +96,8 @@ def my_make_swiss_roll(
             X, y = make_swiss_roll(
                 n_samples=n_s,
                 noise=n_n,
-                hole=n_h
+                hole=n_h,
+                random_state=random_state,
             )
             # print("Configuration {}/{}: {}".format(count_configs, len(configurations), config))
             dataset = pd.DataFrame(X)
