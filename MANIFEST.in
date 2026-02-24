@@ -7,7 +7,7 @@ include CONTRIBUTING.md
 include requirements.txt
 
 # Include configuration files
-recursive-include apps/qprofiler/configs *.yaml
+recursive-include apps/qprofiler/configs *.yaml *.py
 recursive-include tutorial/QProfiler/configs *.yaml
 recursive-include tutorial/Quantum_Projection_Learning/configs *.yaml
 

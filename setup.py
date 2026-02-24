@@ -177,7 +177,7 @@ setup(
     # Console scripts for command-line tools
     entry_points={
         'console_scripts': [
-            'qprofiler=apps.qprofiler.qprofiler:main',
+            'qprofiler=apps.qprofiler.cli:main',
             'qprofiler-batch=apps.qprofiler.qprofiler_batchmode:main',
             'qsage=apps.sage.sage:main',
         ],

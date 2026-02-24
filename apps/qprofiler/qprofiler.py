@@ -39,7 +39,8 @@ DEFAULT_CONFIG_PATH = os.path.join(SCRIPT_DIR, 'configs')
 
 current_dir = os.getcwd()
 # Begin the main function and instatiate Hydra class
-@hydra.main(config_path=DEFAULT_CONFIG_PATH, config_name='config', version_base='1.1')
+# config_path=None allows --config-dir to work properly
+@hydra.main(config_path=None, config_name='config', version_base='1.1')
 def main(args):
     """
     Main function to run the qprofiler. It initializes logging, sets up the environment, and processes datasets.

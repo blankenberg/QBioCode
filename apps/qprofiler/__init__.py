@@ -1,0 +1,1 @@
+"""QProfiler application module."""

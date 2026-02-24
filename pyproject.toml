@@ -110,7 +110,7 @@ all = [
 ]
 
 [project.scripts]
-qprofiler = "apps.qprofiler.qprofiler:main"
+qprofiler = "apps.qprofiler.cli:main"
 qprofiler-batch = "apps.qprofiler.qprofiler_batchmode:main"
 qsage = "apps.sage.sage:main"
 
