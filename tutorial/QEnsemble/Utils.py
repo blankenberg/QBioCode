@@ -9,52 +9,61 @@ This module provides comprehensive utility functions for:
 - Quantum ensemble execution workflows
 - Result post-processing and analysis
 """
-
-from numpy import dtype, float64, ndarray
-import os, re
-from typing import Any
-
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-import seaborn as sns
-from sklearn import datasets
-from sklearn.metrics.pairwise import cosine_similarity
-from xgboost import XGBClassifier
-
-from sklearn.decomposition import PCA
-import umap
-from sklearn.metrics import confusion_matrix, precision_score, recall_score, f1_score
-from lazypredict.Supervised import LazyClassifier
+import os
+import re
 import pickle
 import warnings
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
-import modeling_random_unitary
-from sklearn.metrics import f1_score
+from typing import Any
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn import datasets
+from sklearn.decomposition import PCA
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import confusion_matrix, precision_score, recall_score, f1_score
+from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.model_selection import RandomizedSearchCV, GridSearchCV, StratifiedKFold
-from qiskit_ibm_runtime import QiskitRuntimeService
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from lazypredict.Supervised import LazyClassifier
+from xgboost import XGBClassifier
+import umap
+
+from qiskit_ibm_runtime import QiskitRuntimeService, SamplerV2 as Sampler
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 from qiskit.circuit.library import XGate
-from qiskit_ibm_runtime import SamplerV2 as Sampler
-warnings.filterwarnings('ignore')
 
+import modeling_random_unitary
 from modeling import *
+
+warnings.filterwarnings('ignore')
 
 
 def calculate_predicted_classes(preds):
     """
     Convert probability predictions to class labels.
     
+    Takes probability predictions in the form [p0, p1] and converts them
+    to binary class labels by selecting the class with higher probability.
+    
     Parameters
     ----------
     preds : list of array-like
-        Predicted probabilities for each class [p0, p1]
+        Predicted probabilities for each class. Each element should be
+        [p0, p1] where p0 is probability of class 0 and p1 is probability
+        of class 1
     
     Returns
     -------
-    list
-        Predicted class labels (0 or 1)
+    list of int
+        Predicted class labels (0 or 1) based on argmax of probabilities
+        
+    Examples
+    --------
+    >>> preds = [[0.7, 0.3], [0.2, 0.8], [0.5, 0.5]]
+    >>> calculate_predicted_classes(preds)
+    [0, 1, 1]
     """
     return [0 if x[0] > x[1] else 1 for x in preds]
 
@@ -158,17 +167,36 @@ def calculate_f1(preds, y_test):
     """
     Calculate weighted F1 score from probability predictions.
     
+    Converts probability predictions to class labels and computes the
+    weighted F1 score, which is the harmonic mean of precision and recall
+    weighted by class support.
+    
     Parameters
     ----------
     preds : list of array-like
-        Predicted probabilities for each class [p0, p1]
-    y_test : array-like
-        True labels
+        Predicted probabilities for each class. Each element should be
+        [p0, p1] where p0 + p1 ≈ 1
+    y_test : array-like, shape (n_samples,)
+        True binary labels (0 or 1)
     
     Returns
     -------
     float
-        Weighted F1 score
+        Weighted F1 score in range [0, 1]. Higher is better.
+        F1 = 2 * (precision * recall) / (precision + recall)
+        
+    Notes
+    -----
+    Uses sklearn's f1_score with average='weighted' to account for
+    class imbalance.
+    
+    Examples
+    --------
+    >>> preds = [[0.9, 0.1], [0.3, 0.7], [0.8, 0.2]]
+    >>> y_test = np.array([0, 1, 0])
+    >>> f1 = calculate_f1(preds, y_test)
+    >>> print(f"F1 Score: {f1:.3f}")
+    F1 Score: 1.000
     """
     preds = [1 if p[1] > p[0] else 0 for p in preds]
     return f1_score(y_pred=preds, y_true=y_test, average='weighted')
@@ -179,49 +207,89 @@ def run_quantum_ensemble(predictions, dataset, method, dataset_name, seed, test_
     """
     Run quantum ensemble experiments across multiple parameter configurations.
     
+    This is a comprehensive workflow function that performs a grid search over
+    quantum ensemble hyperparameters (d, n_swap, n_features, n_train) and
+    evaluates performance on test data. Results are automatically saved to
+    disk after each configuration.
+    
+    The function handles:
+    - Data preprocessing (scaling, dimensionality reduction)
+    - Feature selection (variance-based or PCA/UMAP)
+    - Circuit construction and execution
+    - Performance evaluation
+    - Result aggregation and persistence
+    
     Parameters
     ----------
     predictions : dict
-        Dictionary to store prediction results
+        Dictionary to store prediction results. Structure:
+        predictions[dataset_name][method] = DataFrame of results
     dataset : dict
-        Dictionary containing dataset splits
+        Dictionary containing dataset splits. Structure:
+        dataset[dataset_name][params] = (X_train, X_test, y_train, y_test)
     method : str
-        Method name for results tracking
+        Method name for results tracking (e.g., 'qensemble', 'qensemble_random_unitary')
     dataset_name : str
-        Name of the dataset
+        Name of the dataset being processed
     seed : int
-        Random seed for reproducibility
+        Random seed for reproducibility of training set selection
     test_size : float
-        Fraction of data for testing
+        Fraction of data for testing (informational, not used directly)
     file_predictions : str
-        Path to save predictions
+        Path to pickle file for saving predictions dictionary
     ds : list of int
-        List of ensemble depths (control qubits) to test
+        List of ensemble depths (control qubits) to test. Example: [1, 2, 3]
     n_swaps : list of int
-        List of swap counts to test
+        List of swap operation counts to test. Example: [1, 2, 3]
     n_features : list of int
-        List of feature counts to test
+        List of feature counts to test. Must be powers of 2. Example: [2, 4, 8]
     n_trains : list of int
-        List of training sample sizes to test
+        List of training sample sizes to test. Example: [4, 8, 16]
     n_shots : int
-        Number of measurement shots
+        Number of measurement shots per circuit execution
     pca_embed : bool, optional
-        Use PCA for dimensionality reduction (default: False)
+        If True, use PCA for dimensionality reduction (default: False)
     umap_embed : bool, optional
-        Use UMAP for dimensionality reduction (default: False)
+        If True, use UMAP for dimensionality reduction (default: False)
     device : str, optional
-        Device for simulation: 'CPU', 'GPU', or IBM device name (default: 'CPU')
+        Execution device:
+        - 'CPU': Local CPU simulation
+        - 'GPU': Local GPU simulation (requires qiskit-aer-gpu)
+        - 'ibm_*': IBM Quantum device name (requires instance)
+        (default: 'CPU')
     instance : str, optional
-        IBM Quantum instance string (default: '')
+        IBM Quantum instance string (e.g., 'ibm-q/open/main') required
+        when device is an IBM backend (default: '')
     random_unitary : bool, optional
-        Use random unitary ensemble variant (default: False)
+        If True, use random unitary ensemble variant from
+        modeling_random_unitary module (default: False)
     select_features : list, optional
-        Specific features to select (default: [])
+        List of specific feature names to select. If empty, uses
+        variance-based selection (default: [])
     
     Returns
     -------
     dict
-        Updated predictions dictionary with results
+        Updated predictions dictionary with new results appended
+        
+    Notes
+    -----
+    - Automatically skips configurations that have already been run
+    - Uses MinMaxScaler for data normalization
+    - Feature selection: variance-based (default), PCA, or UMAP
+    - Results saved after each configuration for fault tolerance
+    - Skips configurations where n_train <= d (insufficient samples)
+    
+    Examples
+    --------
+    >>> predictions = {}
+    >>> dataset = {'blobs': {(100, 2, 2): (X_train, X_test, y_train, y_test)}}
+    >>> predictions = run_quantum_ensemble(
+    ...     predictions, dataset, 'qensemble', 'blobs', seed=42,
+    ...     test_size=0.2, file_predictions='results.pkl',
+    ...     ds=[2], n_swaps=[1], n_features=[2], n_trains=[4],
+    ...     n_shots=8192, device='CPU'
+    ... )
     """
 
     if (dataset_name not in predictions.keys()) or (method not in predictions[dataset_name].keys()):
@@ -618,10 +686,101 @@ def run_lazy_predict(predictions, dataset, method, dataset_name, seed, test_size
     return predictions
 
         
-def run_ensemble(d, n_train, seed, n_swap, X_train, X_test,  y_train, y_test, 
-                 mode = "pair_sample", n_shots = 8192, selectRandom = True, device = 'CPU',
-                 barriers = False, instance = '', resilience_level = 1, optimization_level = 3,
-                 nthreads = 20, dynamicDecoupling = False):
+def run_ensemble(d, n_train, seed, n_swap, X_train, X_test, y_train, y_test,
+                 mode="pair_sample", n_shots=8192, selectRandom=True, device='CPU',
+                 barriers=False, instance='', resilience_level=1, optimization_level=3,
+                 nthreads=20, dynamicDecoupling=False):
+    """
+    Execute quantum ensemble classifier with comprehensive hardware support.
+    
+    This function provides a complete workflow for running quantum ensemble
+    classification with support for both simulation and IBM Quantum hardware.
+    It handles training set selection, circuit construction, transpilation,
+    execution, and evaluation.
+    
+    Key features:
+    - IBM Quantum hardware execution with error mitigation
+    - Dynamic decoupling for noise reduction
+    - Parallel transpilation
+    - Automatic result aggregation
+    
+    Parameters
+    ----------
+    d : int
+        Number of control qubits (ensemble depth)
+    n_train : int
+        Number of training samples to use
+    seed : int
+        Random seed for training set selection
+    n_swap : int
+        Number of swap operations per control qubit
+    X_train : array-like, shape (n_samples, n_features)
+        Training feature data
+    X_test : array-like, shape (n_test, n_features)
+        Test feature data
+    y_train : array-like, shape (n_samples,)
+        Training labels
+    y_test : array-like, shape (n_test,)
+        Test labels
+    mode : str, optional
+        Ensemble mode: "pair_sample", "balanced", or "unbalanced"
+        (default: "pair_sample")
+    n_shots : int, optional
+        Number of measurement shots (default: 8192)
+    selectRandom : bool, optional
+        If True, randomly select training subset; if False, use all
+        training data (default: True)
+    device : str, optional
+        Execution device: 'CPU', 'GPU', or IBM device name like 'ibm_kyoto'
+        (default: 'CPU')
+    barriers : bool, optional
+        Add barrier gates for visualization (default: False)
+    instance : str, optional
+        IBM Quantum instance string (default: '')
+    resilience_level : int, optional
+        IBM error mitigation level (0-3). Higher = more mitigation
+        (default: 1)
+    optimization_level : int, optional
+        Transpilation optimization level (0-3) (default: 3)
+    nthreads : int, optional
+        Number of threads for parallel transpilation (default: 20)
+    dynamicDecoupling : bool, optional
+        Enable dynamic decoupling (XY4 sequence) for IBM hardware
+        (default: False)
+    
+    Returns
+    -------
+    DataFrame
+        Results with columns: seed, n_feature, qubits, d, n_train, n_swap,
+        accuracy, brier, predictions, y_test. Returns empty DataFrame if
+        circuit exceeds 36 qubits.
+        
+    Notes
+    -----
+    IBM Quantum Features:
+    - Uses SamplerV2 with twirling enabled
+    - Supports dynamic decoupling with XY4 sequence
+    - Parallel circuit transpilation
+    - Automatic gate duration handling
+    
+    Simulation Features:
+    - CPU/GPU support via AerSimulator
+    - Statevector method with optimization
+    - Limited to ~36 qubits
+    
+    Examples
+    --------
+    >>> # Local simulation
+    >>> results = run_ensemble(d=2, n_train=4, seed=42, n_swap=1,
+    ...                        X_train, X_test, y_train, y_test,
+    ...                        device='CPU', n_shots=8192)
+    
+    >>> # IBM Quantum hardware
+    >>> results = run_ensemble(d=2, n_train=4, seed=42, n_swap=1,
+    ...                        X_train, X_test, y_train, y_test,
+    ...                        device='ibm_kyoto', instance='ibm-q/open/main',
+    ...                        dynamicDecoupling=True, n_shots=4096)
+    """
 
     predictions = []
     qc_list = []
@@ -751,6 +910,40 @@ def normalize_custom_OLD(x, C=1):
 
 
 def normalize_custom(x, C=1):
+    """
+    Normalize data vector for quantum state encoding.
+    
+    Normalizes a classical data vector to unit L2 norm and converts to
+    complex amplitudes suitable for quantum state initialization. This
+    ensures the encoded quantum state is properly normalized.
+    
+    Parameters
+    ----------
+    x : array-like, shape (n,)
+        Classical data vector to normalize
+    C : float, optional
+        Scaling constant (default: 1)
+    
+    Returns
+    -------
+    list of complex
+        Normalized vector as list of complex numbers with zero imaginary part
+        
+    Notes
+    -----
+    - Computes M = Σᵢ xᵢ²
+    - Returns [x₀/√(MC), x₁/√(MC), ..., xₙ/√(MC)] as complex numbers
+    - Ensures Σᵢ |xᵢ|² = 1 for valid quantum state
+    
+    Examples
+    --------
+    >>> x = np.array([3.0, 4.0])
+    >>> x_norm = normalize_custom(x)
+    >>> print([abs(xi) for xi in x_norm])
+    [0.6, 0.8]
+    >>> print(sum([abs(xi)**2 for xi in x_norm]))
+    1.0
+    """
     M = sum( x**2 )
     x_normed = [ 1/np.sqrt(M*C)*complex(i,0) for i in x ]
     return x_normed
@@ -776,6 +969,50 @@ def label_to_array(y):
 
 
 def evaluation_metrics(predictions, y_test, save=True):
+    """
+    Calculate accuracy and Brier score for binary classification.
+    
+    Computes two key metrics for evaluating probabilistic binary classifiers:
+    accuracy (correctness) and Brier score (calibration quality).
+    
+    Parameters
+    ----------
+    predictions : list of array-like
+        Predicted probabilities. Each element should be [p0, p1] where
+        p0 + p1 = 1
+    y_test : array-like, shape (n_samples,)
+        True binary labels (0 or 1)
+    save : bool, optional
+        Legacy parameter, not currently used (default: True)
+    
+    Returns
+    -------
+    tuple of float
+        (accuracy, brier_score) where:
+        - accuracy: Fraction of correct predictions (0 to 1)
+        - brier_score: Mean squared error of probabilities (0 to 1)
+          Lower Brier score indicates better calibration
+          
+    Notes
+    -----
+    - Predictions rounded to nearest integer for accuracy
+    - Brier score computed using probability of class 1
+    - Perfect predictions: accuracy=1.0, brier_score=0.0
+    - Uses sklearn.metrics for computation
+    
+    Examples
+    --------
+    >>> predictions = [[0.9, 0.1], [0.2, 0.8], [0.6, 0.4]]
+    >>> y_test = np.array([0, 1, 0])
+    >>> acc, brier = evaluation_metrics(predictions, y_test)
+    >>> print(f"Accuracy: {acc:.3f}, Brier: {brier:.3f}")
+    Accuracy: 1.000, Brier: 0.030
+    
+    See Also
+    --------
+    sklearn.metrics.accuracy_score : Accuracy calculation
+    sklearn.metrics.brier_score_loss : Brier score calculation
+    """
     from sklearn.metrics import brier_score_loss, accuracy_score
     labels = label_to_array(y_test)
 
@@ -811,7 +1048,57 @@ def training_set_OLD(X, Y, n=4, seed=123):
     return X_data_new, Y_data
 
 
-def training_set(X, Y, n=4, seed=123, selectRandom = True):
+def training_set(X, Y, n=4, seed=123, selectRandom=True):
+    """
+    Select and prepare balanced training subset for quantum ensemble.
+    
+    Creates a balanced training set by selecting equal numbers of samples
+    from each class, normalizing them for quantum encoding, and converting
+    labels to one-hot format.
+    
+    Parameters
+    ----------
+    X : array-like, shape (n_samples, n_features)
+        Training feature data
+    Y : array-like, shape (n_samples,)
+        Training labels (binary: 0 or 1)
+    n : int, optional
+        Total number of training samples to select. Must be even for
+        balanced selection (default: 4)
+    seed : int, optional
+        Random seed for reproducible selection (default: 123)
+    selectRandom : bool, optional
+        If True, randomly select n/2 samples from each class.
+        If False, use all training data (default: True)
+    
+    Returns
+    -------
+    tuple of (ndarray, ndarray)
+        X_data : array of normalized training samples, shape (n, n_features)
+                 Each sample is normalized using normalize_custom()
+        Y_data : one-hot encoded labels, shape (n, 2)
+                 [[1,0] for class 0, [0,1] for class 1]
+                 
+    Notes
+    -----
+    - Ensures class balance by selecting n/2 samples from each class
+    - All data vectors are normalized to unit L2 norm
+    - Labels converted to quantum-compatible one-hot encoding
+    - Random selection uses numpy's random.choice without replacement
+    
+    Examples
+    --------
+    >>> X = np.random.rand(20, 4)
+    >>> Y = np.array([0]*10 + [1]*10)
+    >>> X_data, Y_data = training_set(X, Y, n=4, seed=42)
+    >>> print(X_data.shape, Y_data.shape)
+    (4, 4) (4, 2)
+    >>> print(Y_data)
+    [[0 1]
+     [0 1]
+     [1 0]
+     [1 0]]
+    """
     np.random.seed(seed)
 
     X_data = X.copy()
@@ -839,3 +1126,202 @@ def training_set(X, Y, n=4, seed=123, selectRandom = True):
 def cosine_classifier(x,y):
     return 1/2 + (cosine_similarity([x], [y])**2)/2
 
+def retrieve_proba(r):
+    """
+    Extract probability predictions from measurement counts.
+    
+    Converts raw measurement counts from quantum circuit execution into
+    probability predictions for binary classification. Handles edge cases
+    where only one outcome is observed.
+    
+    Parameters
+    ----------
+    r : dict
+        Dictionary of measurement counts with keys '0' and/or '1'
+        Example: {'0': 4123, '1': 4069}
+    
+    Returns
+    -------
+    list of float
+        [p0, p1] where p0 is probability of class 0 and p1 is probability
+        of class 1. Always sums to 1.0.
+        
+    Notes
+    -----
+    - Handles missing keys gracefully (assigns probability 0 or 1)
+    - If only '0' observed: returns [1.0, 0.0]
+    - If only '1' observed: returns [0.0, 1.0]
+    - If both observed: returns normalized probabilities
+    
+    Examples
+    --------
+    >>> counts = {'0': 6000, '1': 2000}
+    >>> probs = retrieve_proba(counts)
+    >>> print(probs)
+    [0.75, 0.25]
+    
+    >>> counts = {'0': 8192}  # Only one outcome
+    >>> probs = retrieve_proba(counts)
+    >>> print(probs)
+    [1.0, 0.0]
+    """
+    state_zero = '0'
+    state_one = '1'
+    p0 = 0
+    p1 = 0
+    try:
+        p0 = r[state_zero] / (r[state_zero] + r[state_one])
+        p1 = 1 - p0
+    except:
+        if list(r.keys())[0] == state_zero:
+            p0 = 1
+            p1 = 0
+        elif list(r.keys())[0] == state_one:
+            p0 = 0
+            p1 = 1
+    return [p0, p1]
+
+
+def post_process_results( predictions, dir_output, datasets, metrics = ['Accuracy', 'F1 Score', 'brier'] ):
+
+    total_results = pd.DataFrame()
+    for dataset_name in datasets:
+        print(f"Dataset: {dataset_name}")
+        methods = list( predictions[dataset_name].keys() )
+
+        all_results = pd.DataFrame()
+
+        for method in methods:
+            if method not in ['random_forest_gs', 'xgb_gs']: # Ignore the parameter search experiments for the random forest and xgb
+                print(f"Method: {method}")
+                results_df = predictions[dataset_name][method]
+                results_df = results_df.reset_index(drop=True)
+
+                results_df['num_pred_classes'] = [calculate_number_predicted_classes(x) for x in results_df['predictions']]
+            
+                results_df.columns = [ re.sub( 'dataset_params', 'split', re.sub( 'accuracy', 'Accuracy', re.sub('method', 'Model', x ) ) ) for x in results_df.columns]
+                results_df['F1 Score'] = [ calculate_f1( row.predictions, row.y_test) for idx, row in results_df.iterrows() ]
+
+                if method == 'qcosine':
+                    results_df = results_df[ (results_df['n_train']==1) & (results_df['n_feature']==2)]
+                    results_df['Model'] = [ ':'.join( [row['Model'],str(row['n_train']),str(row['n_feature']), row['embed'] ]) for idx, row in results_df.iterrows() ]
+                elif method in ['random_forest', 'xgb']:
+                    results_df['Model'] = [ ':'.join( [row['Model'],str(row['n_feature']) ]) for idx, row in results_df.iterrows() ]
+                else:
+                    results_df['Model'] = [ ':'.join( [row['Model'],str(row['d']),str(row['n_train']),str(row['n_swap']),str(row['n_feature']),row['embed'] ]) for idx, row in results_df.iterrows() ]
+                    
+                all_results = pd.concat( [all_results, results_df] )
+                
+                if method in ['random_forest', 'xgb']:
+                    results_df = results_df.drop([ 'predictions', 'y_test', 'best_params', 'select_features'], axis =1)
+                else:
+                    results_df = results_df.drop([ 'predictions', 'y_test', 'embed', 'select_features'], axis =1)
+
+        total_results = pd.concat( [total_results, all_results] )
+    total_results_full = total_results.reset_index().copy()
+
+
+    from typing import Any
+    import scipy.stats as stats
+
+    metrics = ['Accuracy', 'F1 Score', 'brier']
+    methods = ['random_forest', 'xgb', 'qcosine', 'qensemble', 'qensemble_random_unitary']
+    methods_cmap = dict(zip( methods[0:2], sns.color_palette('Greys', n_colors=2)))
+    methods_cmap.update( dict(zip(methods[2:], sns.color_palette(n_colors=len(methods[2:]))))  )
+
+
+    total_results_full['key'] = [ '-'.join( [row['Model'], row['dataset']] ) for idx,row in total_results_full.iterrows() ]
+    total_results_full['method'] = [ re.sub( ':.*', '', x ) for x in total_results['Model'] ]
+
+    total_results = total_results_full[['Model', 'Accuracy', 'F1 Score', 'brier', 'dataset', 'split', 'num_pred_classes']]
+    total_results['split'] = [ x[0] for x in total_results['split'] ]
+
+    total_results['key'] = [ '-'.join( [row['Model'], row['dataset']] ) for idx,row in total_results.iterrows() ]
+    total_results['method'] = [ re.sub( ':.*', '', x ) for x in total_results['Model'] ]
+
+
+    total_results = total_results.groupby ( ['Model', 'key', 'method', 'dataset']).median()
+    total_results = total_results.reset_index()
+    total_results = total_results[ total_results.method.isin(methods)]
+
+
+    blob_names = list(set(total_results['dataset']))
+
+    sig_bestmethods: list[Any] = []
+
+    for metric in metrics:
+        max_df = []
+        for method in methods:
+            for bn in blob_names:
+                b = total_results[ total_results['dataset'] == bn ]
+                m = b[b['method'] == method]
+                if len(m) > 0:
+                    if method == 'brier':
+                        mm = m[ m[metric] == min(m[metric])].sort_values('Model')
+                    else:
+                        mm = m[ m[metric] == max(m[metric])].sort_values('Model')
+                max_df.append(total_results_full[total_results_full['key']==mm['key'].iloc[len(mm)-1]])
+        max_df = pd.concat(max_df)
+
+        for method in methods:
+            for d in blob_names:
+                a = max_df[ (max_df.dataset == d) & (max_df.method == method) ][metric].apply(float)
+                b_r = max_df[ (max_df.dataset == d) & (max_df.method == 'random_forest') ][metric].apply(float)
+                b_x = max_df[ (max_df.dataset == d) & (max_df.method == 'xgb') ][metric].apply(float)
+            
+                if metric != 'brier':
+                    if len(a) > 0:
+                        t_statistic, p_value = stats.ttest_ind(a, b_r, alternative='greater')  # one-tailed test)
+                        sig_bestmethods.append( [method, 'random_forest', d, metric, round(float(a.median()),3), round(float(b_r.median()),3), 
+                        round(float(a.std()), 3), round(float(b_r.std()), 3), round(float(t_statistic),3), round(float(p_value),3) ] )
+                        if p_value < 0.05:                                             
+                            print(f"RF: {d} : {method} (n={max_df[ (max_df.dataset == d) & (max_df.method == method) ].shape[0]}) : t={round( t_statistic, 3 )}; p={round( p_value, 3 ) }" )
+
+                        t_statistic, p_value = stats.ttest_ind(a, b_x, alternative='greater')  # one-tailed test)
+                        sig_bestmethods.append( [method, 'xgb', d, metric, round(float(a.median()),3), round(float(b_x.median()),3), 
+                        round(float(a.std()), 3), round(float(b_x.std()), 3), round(float(t_statistic),3), round(float(p_value),3) ] )
+                        if p_value < 0.05:
+                            print(f"XGB: {d} : {method} (n={max_df[ (max_df.dataset == d) & (max_df.method == method) ].shape[0]}) : t={round( t_statistic, 3 )}; p={round( p_value, 3 ) }" )
+                else:
+
+                    if len(a) > 0:
+                        t_statistic, p_value = stats.ttest_ind(a, b_r, alternative='less')  # one-tailed test)
+                        sig_bestmethods.append( [method, 'random_forest', d, metric, round(float(a.median()),3), round(float(b_r.median()),3), 
+                        round(float(a.std()), 3), round(float(b_r.std()), 3), round(float(t_statistic),3), round(float(p_value),3) ] )
+                        if p_value < 0.05:                                             
+                            print(f"RF: {d} : {method} (n={max_df[ (max_df.dataset == d) & (max_df.method == method) ].shape[0]}) : t={round( t_statistic, 3 )}; p={round( p_value, 3 ) }" )
+
+                        t_statistic, p_value = stats.ttest_ind(a, b_x, alternative='less')  # one-tailed test)
+                        sig_bestmethods.append( [method, 'xgb', d, metric, round(float(a.median()),3), round(float(b_x.median()),3), 
+                        round(float(a.std()), 3), round(float(b_x.std()), 3), round(float(t_statistic),3), round(float(p_value),3) ] )
+                        if p_value < 0.05:
+                            print(f"XGB: {d} : {method} (n={max_df[ (max_df.dataset == d) & (max_df.method == method) ].shape[0]}) : t={round( t_statistic, 3 )}; p={round( p_value, 3 ) }" )
+
+        def reformat_dataset(x):
+            xs = [ str(i) for i in x]
+            new_x = [ xs[1], '(' + xs[2] + ',' + xs[3] + ')', '(' + xs[3] + ',' + xs[2] + ')' ]
+            return ' | '.join( new_x)
+
+        max_df['Blob Config'] = [ reformat_dataset(x) for x in max_df['split'] ]
+
+        max_df = max_df[ ['Blob Config', 'method'] + metrics ]
+        max_df = max_df.drop_duplicates()
+        
+        max_df = max_df.sort_values('method')
+        max_df = max_df.sort_values('Blob Config')
+
+        plt.figure(figsize=(7,5))
+        sns.barplot( data = max_df, y = 'Blob Config', x = metric, hue = 'method', hue_order=methods, errorbar='se', palette=methods_cmap.values() )
+        plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+        sns.despine()
+        plt.tight_layout()
+        plt.savefig( os.path.join( dir_output, 'Blob_max_median_'+ re.sub( '\ ', '_', metric ) + '.pdf' ) )
+        plt.show()
+        plt.close()
+
+    sig_bestmethods_df = pd.DataFrame(sig_bestmethods, columns = ['Method', 'Baseline', 'Dataset', 'Metric', 'Median method', 'Median baseline', 
+        'Std. dev. method', 'Std. dev. baseline', 't statistic', 'p-value'])
+    sig_bestmethods_df = sig_bestmethods_df[ sig_bestmethods_df['Method'] != sig_bestmethods_df['Baseline']]
+    sig_bestmethods_df.to_csv( os.path.join( dir_output, 'Blobs_best_stats.csv' ), index = False ) 
+
+    return total_results_full, sig_bestmethods_df
