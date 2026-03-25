@@ -13,7 +13,7 @@ from qiskit_aer import AerSimulator
 import Utils
 
 
-def cos_classifier_OLD(train, test, label_train, printing=False):
+def cos_classifier_legacy(train, test, label_train, printing=False):
     """
     Legacy cosine classifier for single qubit data.
     
@@ -60,7 +60,7 @@ def cos_classifier_OLD(train, test, label_train, printing=False):
     >>> train = np.array([1.0, 0.0])
     >>> test = np.array([0.707, 0.707])
     >>> label = np.array([1.0, 0.0])  # Class 0
-    >>> qc = cos_classifier_OLD(train, test, label)
+    >>> qc = cos_classifier_legacy(train, test, label)
     >>> result = exec_simulator(qc, n_shots=1024)
     """
     c = ClassicalRegister(1, 'c')

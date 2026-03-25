@@ -13,7 +13,7 @@ Quantum ensemble learning combines multiple quantum classifiers to improve predi
 ### Core Modules
 
 - **`modeling.py`**: Main quantum ensemble implementation with fixed swap operations
-  - `cos_classifier_OLD()`: Legacy single-qubit cosine classifier using SWAP test
+  - `cos_classifier__legacy()`: Legacy single-qubit cosine classifier using SWAP test
   - `cos_classifier()`: Multi-qubit quantum cosine similarity classifier
   - `state_prep()`: Extract unitary matrix for quantum state preparation
   - `quantum_cosine_classifier()`: Cosine classifier with explicit unitary gates

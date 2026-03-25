@@ -453,10 +453,10 @@ def run_quantum_cosine(predictions, dataset, method, dataset_name, seed, test_si
                     for x_test, y_ts in zip(X_test, Y_vector_test):
                         ix = np.random.choice(train_size, n_train)[0]
                         x_train: Any | ndarray[Any, dtype[float64]] = X_train[ix]
-                        x_tr = normalize_custom_OLD(x_train)
+                        x_tr = normalize_custom_legacy(x_train)
                         y_tr = Y_vector_train[ix]
-                        x_ts = normalize_custom_OLD(x_test)
-                        qc = cos_classifier_OLD(x_tr, x_ts, y_tr)
+                        x_ts = normalize_custom_legacy(x_test)
+                        qc = cos_classifier_legacy(x_tr, x_ts, y_tr)
 
                         r = exec_simulator(qc, n_shots=n_shots)
 
@@ -900,7 +900,7 @@ def save_dict(d, name='dict'):
     df.to_csv(name)
 
 
-def normalize_custom_OLD(x, C=1):
+def normalize_custom_legacy(x, C=1):
     M = x[0] ** 2 + x[1] ** 2
     x_normed = [
         1 / np.sqrt(M * C) * complex(x[0], 0),  # 00
@@ -1027,25 +1027,6 @@ def evaluation_metrics(predictions, y_test, save=True):
 
     return acc, brier
 
-
-
-def training_set_OLD(X, Y, n=4, seed=123):
-    np.random.seed(seed)
-    ix_y1 = np.random.choice(np.where(Y == 1)[0], int(n / 2), replace=False)
-    ix_y0 = np.random.choice(np.where(Y == 0)[0], int(n / 2), replace=False)
-
-    X_data = np.concatenate([X[ix_y1], X[ix_y0]])
-    X_data_new = []
-
-    for i in range(len(X_data)):
-        X_data_new.append(normalize_custom_OLD(X_data[i]))
-
-    X_data_new = np.array(X_data_new)
-    
-    Y_vector = label_to_array(Y)
-    Y_data = np.concatenate([Y_vector[ix_y1], Y_vector[ix_y0]])
-
-    return X_data_new, Y_data
 
 
 def training_set(X, Y, n=4, seed=123, selectRandom=True):
