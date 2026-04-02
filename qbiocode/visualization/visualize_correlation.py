@@ -1,4 +1,7 @@
 
+from pandas.core.frame import DataFrame
+
+
 import pandas as pd
 from scipy.stats import spearmanr
 from sklearn.metrics import r2_score
@@ -35,7 +38,7 @@ def compute_results_correlation( results_df, correlation = 'spearman', thresh = 
 
     """
 
-    # Refining datasrame
+    # Refining dataframe
     results_df['datatype'] = [ re.sub( '\.csv', '', re.sub( '-.*', '', x ) ) for x in results_df['Dataset'] ]
     results_df[ 'model_embed_datatype'] = [ '_'.join( [str(row.model), str(row.embeddings), str(row.datatype)] ) for idx, row in results_df.iterrows() ]
 
@@ -92,6 +95,7 @@ def plot_results_correlation( correlations_df, metric = 'f1_score', title = '', 
 
     # Sample data
     data = correlations_df[correlations_df['metric'] == metric]
+
     data['feature'] = [ re.sub( 'std', 'Std. dev. of', 
                                re.sub( 'co of v', 'coefficient of variation', 
                                       re.sub( 'kurt$' ,'kurtosis',
@@ -118,7 +122,7 @@ def plot_results_correlation( correlations_df, metric = 'f1_score', title = '', 
     data['feature_map'] = [ fm[x] for x in data['feature']]
 
     # Fill NaN values before scaling to avoid errors
-    data = data.fillna(0)
+    data: DataFrame = data.fillna(0)
 
     # Scale the dot size and then add an epsilon
     epsilon = 5
@@ -126,7 +130,7 @@ def plot_results_correlation( correlations_df, metric = 'f1_score', title = '', 
     scaled_values = MinMaxScaler().fit_transform(size_values)
     data['norm_size'] = (np.round(scaled_values.flatten() * 100) + epsilon).astype(float)
 
-    data[key] = [ re.sub( '_', ' / ', x ) for x in data[key]]
+    data[key] = [ re.sub( '_', ' / ', x.upper() ) for x in data[key]]
     
     plt.figure(figsize=figsize)
     ax = plt.scatter(data[key], data['feature'], s=data['norm_size'], 
@@ -155,7 +159,7 @@ def plot_results_correlation( correlations_df, metric = 'f1_score', title = '', 
     data[key_column] = data[key]
     data['Data feature'] = data['feature']
     to_plot = data.pivot_table(columns = key_column, index = 'Data feature', values = 'correlation')
-    ccolors = [ 'magenta' if re.sub( ' .*', '', x) in model_qml else 'tan' for x in to_plot.columns]
+    ccolors = [ 'magenta' if re.sub( ' .*', '', x.upper()) in model_qml else 'tan' for x in to_plot.columns]
 
     ax = sns.clustermap(to_plot.fillna(0),
                         figsize=figsize,
@@ -179,7 +183,7 @@ def plot_results_correlation( correlations_df, metric = 'f1_score', title = '', 
     cml_col = [ x  for x in to_plot.columns if re.sub( ' .*', '', x) not in model_qml]
     # to_plot = pd.concat( [to_plot.loc[:,qml_col + cml_col ], to_plot.loc[:,cml_col ] ], axis =1)
     to_plot = to_plot.loc[:,qml_col + cml_col ]
-    ccolors = [ 'magenta' if re.sub( ' .*', '', x) in model_qml else 'tan' for x in to_plot.columns]
+    ccolors = [ 'magenta' if re.sub( ' .*', '', x.upper()) in model_qml else 'tan' for x in to_plot.columns]
     ax = sns.clustermap(to_plot.fillna(0),
                         figsize=figsize,
                         col_colors=ccolors,
