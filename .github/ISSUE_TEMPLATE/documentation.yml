@@ -1,0 +1,83 @@
+name: 📚 Documentation
+description: Report an issue or suggest improvements to documentation
+title: "[Docs]: "
+labels: ["documentation", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve our documentation!
+
+  - type: dropdown
+    id: doc-type
+    attributes:
+      label: Documentation Type
+      description: What type of documentation issue is this?
+      options:
+        - Missing documentation
+        - Incorrect/outdated information
+        - Unclear explanation
+        - Typo/grammar
+        - Code example issue
+        - API reference issue
+        - Tutorial/guide improvement
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: location
+    attributes:
+      label: Documentation Location
+      description: Where is the documentation issue? (URL or file path)
+      placeholder: https://qbiocode.readthedocs.io/... or docs/source/...
+    validations:
+      required: true
+
+  - type: textarea
+    id: issue
+    attributes:
+      label: Issue Description
+      description: Describe the documentation issue or what's missing
+      placeholder: The documentation for X is unclear because...
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Suggested Improvement
+      description: How would you improve this documentation?
+      placeholder: I suggest adding/changing...
+    validations:
+      required: false
+
+  - type: textarea
+    id: example
+    attributes:
+      label: Example or Reference
+      description: If applicable, provide an example or reference to similar good documentation
+      placeholder: |
+        For example, see how Project X documents this feature...
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      description: Would you be willing to contribute to fixing this documentation?
+      options:
+        - label: I'd be willing to submit a PR to fix this
+          required: false
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our Code of Conduct
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
+
+# Made with Bob

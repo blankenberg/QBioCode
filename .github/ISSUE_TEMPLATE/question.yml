@@ -1,0 +1,94 @@
+name: ❓ Question
+description: Ask a question about using QBioCode
+title: "[Question]: "
+labels: ["question", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have a question? We're here to help!
+        
+        **Note:** For general discussions, consider using [GitHub Discussions](https://github.com/IBM/QBioCode/discussions) instead.
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Question Category
+      description: What is your question about?
+      options:
+        - Installation/Setup
+        - QProfiler usage
+        - QSage usage
+        - Data generation
+        - Model training
+        - Quantum computing concepts
+        - Performance/Optimization
+        - Integration with other tools
+        - Best practices
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your Question
+      description: What would you like to know?
+      placeholder: How do I...?
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Provide any relevant context about what you're trying to accomplish
+      placeholder: |
+        I'm trying to...
+        I've already tried...
+    validations:
+      required: false
+
+  - type: textarea
+    id: code
+    attributes:
+      label: Code Sample (if applicable)
+      description: Share any relevant code
+      render: python
+      placeholder: |
+        import qbiocode
+        # Your code here
+    validations:
+      required: false
+
+  - type: input
+    id: qbiocode-version
+    attributes:
+      label: QBioCode Version
+      description: What version of QBioCode are you using?
+      placeholder: e.g., 0.1.0
+    validations:
+      required: false
+
+  - type: textarea
+    id: research
+    attributes:
+      label: What have you tried?
+      description: Have you checked the documentation or searched for similar questions?
+      placeholder: |
+        - [ ] Checked the documentation
+        - [ ] Searched existing issues
+        - [ ] Tried...
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our Code of Conduct
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
+
+# Made with Bob
