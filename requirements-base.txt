@@ -1,9 +1,11 @@
+dill
 h5py
 hfda
 hydra-core
 ipykernel
 networkx
 numpy
+optuna
 pandas
 qiskit==2.2.0
 qiskit-aer==0.17.0
