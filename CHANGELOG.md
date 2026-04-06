@@ -66,7 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### CI/CD
 - GitHub Actions workflow for continuous integration
   - Multi-OS testing (Ubuntu, macOS, Windows)
-  - Multi-Python version testing (3.9, 3.10, 3.11)
+  - Multi-Python version testing (3.10, 3.11)
   - Code quality checks (flake8, black, isort, mypy)
   - Test coverage reporting
   - Documentation building
@@ -93,7 +93,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Automated QSage model download
 
 ### Dependencies
-- Python >= 3.9, < 3.13
+- Python >= 3.10, < 3.13
 - Qiskit for quantum computing functionality
 - scikit-learn for classical ML algorithms
 - pandas, numpy for data manipulation
