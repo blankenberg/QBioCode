@@ -1,0 +1,88 @@
+{
+  "title": "QBioCode: An Open-Source Framework for Quantum Computing Applications in Bioinformatics",
+  "description": "QBioCode is a comprehensive suite of computational resources for quantum machine learning applications in healthcare and life sciences. It provides tools for benchmarking quantum and classical machine learning models, analyzing data complexity, and making informed model selection decisions. The package includes QProfiler for automated ML benchmarking with data complexity analysis, QSage for meta-learning and intelligent model selection, artificial data generation with controlled complexity, quantum ML implementations (QSVC, PQK, VQC, QNN), and classical ML baselines (RF, SVM, LR, DT, NB, MLP, XGBoost).",
+  "license": "Apache-2.0",
+  "upload_type": "software",
+  "access_right": "open",
+  "creators": [
+    {
+      "name": "Raubenolt, Bryan",
+      "affiliation": "Cleveland Clinic, Cleveland, OH, USA"
+    },
+    {
+      "name": "Bose, Aritra",
+      "affiliation": "IBM Research, Yorktown Heights, NY, USA",
+      "orcid": "0000-0002-8665-056X"
+    },
+    {
+      "name": "Rhrissorrakrai, Kahn",
+      "affiliation": "IBM Research, Yorktown Heights, NY, USA",
+      "orcid": "0000-0002-1567-9090"
+    },
+    {
+      "name": "Utro, Filippo",
+      "affiliation": "IBM Research, Yorktown Heights, NY, USA",
+      "orcid": "0000-0003-3226-7642"
+    },
+    {
+      "name": "Mohan, Akhil",
+      "affiliation": "Cleveland Clinic, Cleveland, OH, USA",
+      "orcid": "0000-0002-7909-3099"
+    },
+    {
+      "name": "Blankenberg, Daniel",
+      "affiliation": "Cleveland Clinic, Cleveland, OH, USA"
+    },
+    {
+      "name": "Parida, Laxmi",
+      "affiliation": "IBM Research, Yorktown Heights, NY, USA",
+      "orcid": "0000-0002-7872-5074"
+    }
+  ],
+  "keywords": [
+    "Quantum Machine Learning",
+    "Machine Learning",
+    "Healthcare",
+    "Life Sciences",
+    "Bioinformatics",
+    "Quantum Computing",
+    "Benchmarking",
+    "Data Complexity",
+    "Model Selection",
+    "Qiskit",
+    "QML",
+    "Quantum Neural Networks",
+    "Quantum Support Vector Machines",
+    "Projected Quantum Kernel",
+    "Variational Quantum Classifier"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/IBM/QBioCode",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    },
+    {
+      "identifier": "https://qbiocode.readthedocs.io/",
+      "relation": "isDocumentedBy",
+      "scheme": "url"
+    }
+  ],
+  "contributors": [
+    {
+      "name": "IBM Research",
+      "type": "ResearchGroup"
+    },
+    {
+      "name": "Cleveland Clinic",
+      "type": "ResearchGroup"
+    }
+  ],
+  "language": "eng",
+  "communities": [
+    {
+      "identifier": "zenodo"
+    }
+  ],
+  "grants": []
+}
