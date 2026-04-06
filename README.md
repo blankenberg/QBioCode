@@ -40,6 +40,30 @@ pip install qbiocode[apps]
 pip install qbiocode[all]
 ```
 
+#### Install with Conda
+
+QBioCode will be available on conda-forge and bioconda after the initial release review process.
+
+```bash
+# Once available on conda-forge (recommended)
+conda install -c conda-forge qbiocode
+
+# Or from bioconda (includes bioinformatics dependencies)
+conda install -c bioconda -c conda-forge qbiocode
+
+# Create a new environment with qbiocode
+conda create -n qbiocode -c conda-forge qbiocode
+conda activate qbiocode
+```
+
+**Current Status**: Conda packages are pending submission to conda-forge and bioconda. In the meantime, use pip within a conda environment:
+
+```bash
+conda create -n qbiocode python=3.10
+conda activate qbiocode
+pip install qbiocode
+```
+
 #### Install from Source
 
 ```bash

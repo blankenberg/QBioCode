@@ -7,7 +7,7 @@
 
 # Installation
 
-QBioCode can be installed via PyPI or from source.
+QBioCode can be installed via PyPI, conda, or from source.
 
 ## Quick Install from PyPI (Recommended)
 
@@ -28,6 +28,42 @@ Install with all optional dependencies:
 ```bash
 pip install qbiocode[all]
 ```
+
+## Install with Conda
+
+QBioCode will be available on conda-forge and bioconda channels after the initial release review process.
+
+### Once Available on Conda-forge
+
+```bash
+# Install from conda-forge (recommended)
+conda install -c conda-forge qbiocode
+
+# Or from bioconda (includes bioinformatics dependencies)
+conda install -c bioconda -c conda-forge qbiocode
+
+# Create a new environment with qbiocode
+conda create -n qbiocode -c conda-forge qbiocode
+conda activate qbiocode
+```
+
+### Current Workaround
+
+While conda packages are pending submission, you can use pip within a conda environment:
+
+```bash
+# Create a conda environment with Python 3.10+
+conda create -n qbiocode python=3.10
+conda activate qbiocode
+
+# Install QBioCode from PyPI
+pip install qbiocode
+
+# Or with apps support
+pip install qbiocode[apps]
+```
+
+**Note**: See [docs/CONDA_SUBMISSION.md](../CONDA_SUBMISSION.md) for information about the conda submission process.
 
 ## Install from Source
 
