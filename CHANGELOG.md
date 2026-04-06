@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.0] - 2026-04-06
 
+### ⚠️ Breaking Changes
+- **Minimum Python version increased to 3.10** (was 3.9)
+  - Required for compatibility with latest Qiskit ecosystem (qiskit-ibm-runtime 0.44.0+)
+  - Python 3.9 reaches end-of-life in October 2025
+
 ### Added
 
 #### Core Features
