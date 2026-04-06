@@ -27,6 +27,21 @@ QBioCode requires Python **3.10 or higher** and has been tested with Python vers
 
 ### Installation
 
+#### Install from PyPI (Recommended)
+
+```bash
+# Install the latest stable version
+pip install qbiocode
+
+# Install with apps support (QProfiler, QSage)
+pip install qbiocode[apps]
+
+# Install with all optional dependencies
+pip install qbiocode[all]
+```
+
+#### Install from Source
+
 ```bash
 # Clone the repository
 git clone https://github.com/IBM/QBioCode.git
@@ -36,7 +51,7 @@ cd QBioCode
 python -m venv .env
 source .env/bin/activate  # On Windows: .env\Scripts\activate
 
-# Install QBioCode
+# Install QBioCode in editable mode
 pip install -e .
 
 # Install with apps support (QProfiler, QSage)
