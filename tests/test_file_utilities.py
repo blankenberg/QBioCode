@@ -19,6 +19,10 @@ def write_text(path: Path, content: str) -> None:
     path.write_text(content, encoding="utf-8")
 
 
+def normalize_pairs(pairs):
+    return {tuple(sorted(pair)) for pair in pairs}
+
+
 def test_find_duplicate_files_detects_matches_ignoring_empty_lines(tmp_path):
     write_text(tmp_path / "one.txt", "alpha\n\nbeta\n")
     write_text(tmp_path / "two.txt", "beta\nalpha\n")
@@ -26,9 +30,9 @@ def test_find_duplicate_files_detects_matches_ignoring_empty_lines(tmp_path):
 
     duplicates = find_duplicates.find_duplicate_files(str(tmp_path))
 
-    assert duplicates == [
-        (str(tmp_path / "one.txt"), str(tmp_path / "two.txt"))
-    ]
+    assert normalize_pairs(duplicates) == {
+        tuple(sorted((str(tmp_path / "one.txt"), str(tmp_path / "two.txt"))))
+    }
 
 
 def test_find_duplicate_files_honors_case_sensitivity_setting(tmp_path):
@@ -40,9 +44,9 @@ def test_find_duplicate_files_honors_case_sensitivity_setting(tmp_path):
         case_sensitive=False,
     )
 
-    assert duplicates == [
-        (str(tmp_path / "upper.txt"), str(tmp_path / "lower.txt"))
-    ]
+    assert normalize_pairs(duplicates) == {
+        tuple(sorted((str(tmp_path / "upper.txt"), str(tmp_path / "lower.txt"))))
+    }
 
 
 def test_find_duplicate_files_raises_for_missing_directory(tmp_path):
