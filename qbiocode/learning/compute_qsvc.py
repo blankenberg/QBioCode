@@ -9,11 +9,13 @@ from qiskit_ibm_runtime import QiskitRuntimeService
 from qiskit_ibm_runtime import SamplerV2 as Sampler
 from qiskit_machine_learning.algorithms import QSVC, PegasosQSVC
 from qiskit_machine_learning.kernels import FidelityQuantumKernel
+
 # from qiskit.primitives import Sampler
 from qiskit_machine_learning.state_fidelities import ComputeUncompute
 from sklearn.model_selection import GridSearchCV
 
 import qbiocode.utils.qutils as qutils
+
 # ====== Additional local imports ======
 from qbiocode.evaluation.model_evaluation import modeleval
 
@@ -21,8 +23,6 @@ from qbiocode.evaluation.model_evaluation import modeleval
 
 
 # ====== Qiskit imports ======
-
-
 
 
 def compute_qsvc(

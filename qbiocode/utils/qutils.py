@@ -6,14 +6,20 @@ import re
 import numpy as np
 import pandas as pd
 from qiskit.circuit.equivalence_library import SessionEquivalenceLibrary as sel
-from qiskit.circuit.library import (EfficientSU2, PauliFeatureMap,
-                                    RealAmplitudes, TwoLocal, XGate, YGate,
-                                    ZFeatureMap, ZZFeatureMap)
+from qiskit.circuit.library import (
+    EfficientSU2,
+    PauliFeatureMap,
+    RealAmplitudes,
+    TwoLocal,
+    XGate,
+    YGate,
+    ZFeatureMap,
+    ZZFeatureMap,
+)
 from qiskit.primitives import StatevectorEstimator, StatevectorSampler
 from qiskit.quantum_info import SparsePauliOp
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
-from qiskit_algorithms.optimizers import (COBYLA, L_BFGS_B, NFT, SPSA,
-                                          GradientDescent, spsa)
+from qiskit_algorithms.optimizers import COBYLA, L_BFGS_B, NFT, SPSA, GradientDescent, spsa
 from qiskit_ibm_runtime import EstimatorOptions
 from qiskit_ibm_runtime import EstimatorV2 as Estimator
 from qiskit_ibm_runtime import SamplerOptions

@@ -12,8 +12,6 @@ from qbiocode.evaluation.model_evaluation import modeleval
 # ====== Scikit-learn imports ======
 
 
-
-
 def compute_nb(
     X_train,
     X_test,

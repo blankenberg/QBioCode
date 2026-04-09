@@ -5,14 +5,11 @@ from typing import Literal
 
 import pandas as pd
 from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
-from sklearn.preprocessing import (MinMaxScaler, OneHotEncoder, OrdinalEncoder,
-                                   StandardScaler)
+from sklearn.preprocessing import MinMaxScaler, OneHotEncoder, OrdinalEncoder, StandardScaler
 
 from qbiocode.utils.helper_fn import print_results
 
 # ====== Scikit-learn imports ======
-
-
 
 
 def modeleval(

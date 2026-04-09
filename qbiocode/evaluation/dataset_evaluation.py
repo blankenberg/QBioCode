@@ -6,10 +6,12 @@ import numpy as np
 import pandas as pd
 from scipy.linalg import eigvals, inv, norm
 from scipy.spatial import ConvexHull as CH
+
 # ====== Scipy imports ======
 from scipy.stats import entropy
 from skdim import id
 from skdim.id import lPCA
+
 # ====== Scikit-learn imports ======
 from sklearn import datasets
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis

@@ -7,8 +7,7 @@ import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import (accuracy_score, auc, classification_report,
-                             confusion_matrix, f1_score)
+from sklearn.metrics import accuracy_score, auc, classification_report, confusion_matrix, f1_score
 from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
 from sklearn.neural_network import MLPClassifier
 from sklearn.svm import SVC
@@ -31,6 +30,7 @@ from sklearn import svm
 from sklearn.model_selection import GridSearchCV
 
 import qbiocode.utils.qutils as qutils
+
 # ====== Additional local imports ======
 from qbiocode.evaluation.model_evaluation import modeleval
 

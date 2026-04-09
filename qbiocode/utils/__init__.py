@@ -42,8 +42,14 @@ from .generate_qml_configs import generate_qml_experiment_configs
 from .helper_fn import feature_encoding, scaler_fn
 from .ibm_account import get_creds, instantiate_runtime_service
 from .qc_winner_finder import qml_winner
-from .qutils import (get_ansatz, get_backend_session, get_estimator,
-                     get_feature_map, get_optimizer, get_sampler)
+from .qutils import (
+    get_ansatz,
+    get_backend_session,
+    get_estimator,
+    get_feature_map,
+    get_optimizer,
+    get_sampler,
+)
 
 __all__ = [
     # Data preprocessing

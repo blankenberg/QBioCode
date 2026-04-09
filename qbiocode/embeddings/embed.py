@@ -2,9 +2,11 @@ import os
 from functools import reduce
 
 import numpy as np
+
 # ====== Qiskit imports ======
 from qiskit import QuantumCircuit
 from qiskit.quantum_info import Pauli
+
 # ====== Embedding functions imports ======
 from sklearn.decomposition import NMF, PCA
 from sklearn.manifold import Isomap, LocallyLinearEmbedding, SpectralEmbedding
