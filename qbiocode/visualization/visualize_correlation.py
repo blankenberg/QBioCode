@@ -64,7 +64,7 @@ def compute_results_correlation(results_df, correlation="spearman", thresh=0.7):
 
     # Refining datasrame
     results_df["datatype"] = [
-        re.sub("\.csv", "", re.sub("-.*", "", x)) for x in results_df["Dataset"]
+        re.sub(r"\.csv", "", re.sub(r"-.*", "", x)) for x in results_df["Dataset"]
     ]
     results_df["model_embed_datatype"] = [
         "_".join([str(row.model), str(row.embeddings), str(row.datatype)])
