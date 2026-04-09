@@ -6,12 +6,13 @@ varying sample sizes, noise levels, and hole configurations, useful for testing
 dimensionality reduction and manifold learning algorithms.
 """
 
-from sklearn.datasets import make_swiss_roll
-import pandas as pd
-import numpy as np
 import itertools
 import json
 import os
+
+import numpy as np
+import pandas as pd
+from sklearn.datasets import make_swiss_roll
 
 # parameters to vary across the configurations
 N_SAMPLES = list(range(100, 300, 20))

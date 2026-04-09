@@ -1,11 +1,12 @@
+import re
+
+import matplotlib.colors as mcolors
+import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
+import seaborn as sns
 from scipy.stats import spearmanr
 from sklearn.metrics import r2_score
-import re
-import seaborn as sns
-import matplotlib.pyplot as plt
-import matplotlib.colors as mcolors
-import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 
 # Set publication-quality defaults for scientific journals

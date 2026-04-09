@@ -25,14 +25,37 @@ Quick Start
 >>> results = compute_rf(X_train, y_train, X_test, y_test)
 """
 
-from .version import __version__
+# ====== Import data generation functions ======
+from .data_generation import (
+    generate_circles_datasets,
+    generate_classification_datasets,
+    generate_moons_datasets,
+    generate_s_curve_datasets,
+    generate_spheres_datasets,
+    generate_spirals_datasets,
+    generate_swiss_roll_datasets,
+)
+from .data_generation.generator import generate_data
+
+# ====== Import embedding functions ======
+from .embeddings.embed import get_embeddings, pqk
+
+# ====== Import evaluation functions ======
+from .evaluation.dataset_evaluation import evaluate
+from .evaluation.model_evaluation import modeleval
+from .evaluation.model_run import model_run
 
 # ====== Import learning functions ======
-from .learning.compute_svc import compute_svc, compute_svc_opt
 from .learning.compute_dt import compute_dt, compute_dt_opt
-from .learning.compute_nb import compute_nb, compute_nb_opt
 from .learning.compute_lr import compute_lr, compute_lr_opt
+from .learning.compute_mlp import compute_mlp, compute_mlp_opt
+from .learning.compute_nb import compute_nb, compute_nb_opt
+from .learning.compute_pqk import compute_pqk
+from .learning.compute_qnn import compute_qnn
+from .learning.compute_qsvc import compute_qsvc
 from .learning.compute_rf import compute_rf, compute_rf_opt
+from .learning.compute_svc import compute_svc, compute_svc_opt
+from .learning.compute_vqc import compute_vqc
 
 try:
     from .learning.compute_xgb import compute_xgb, compute_xgb_opt
@@ -40,41 +63,17 @@ except Exception:
     # XGBoost not available (e.g., OpenMP not installed on macOS)
     compute_xgb = None  # type: ignore
     compute_xgb_opt = None  # type: ignore
-from .learning.compute_mlp import compute_mlp, compute_mlp_opt
-from .learning.compute_qnn import compute_qnn
-from .learning.compute_qsvc import compute_qsvc
-from .learning.compute_vqc import compute_vqc
-from .learning.compute_pqk import compute_pqk
-
-# ====== Import embedding functions ======
-from .embeddings.embed import get_embeddings, pqk
 
 # ====== Import helper functions ======
-from .utils.helper_fn import scaler_fn, feature_encoding
-from .utils.qc_winner_finder import qml_winner
 from .utils.dataset_checkpoint import checkpoint_restart
-
-# ====== Import evaluation functions ======
-from .evaluation.model_evaluation import modeleval
-from .evaluation.dataset_evaluation import evaluate
-from .evaluation.model_run import model_run
+from .utils.helper_fn import feature_encoding, scaler_fn
+from .utils.qc_winner_finder import qml_winner
+from .version import __version__
 
 # ====== Import visualization functions ======
 from .visualization.visualize_correlation import (
-    plot_results_correlation,
     compute_results_correlation,
-)
-
-# ====== Import data generation functions ======
-from .data_generation.generator import generate_data
-from .data_generation import (
-    generate_circles_datasets,
-    generate_moons_datasets,
-    generate_classification_datasets,
-    generate_s_curve_datasets,
-    generate_spheres_datasets,
-    generate_spirals_datasets,
-    generate_swiss_roll_datasets,
+    plot_results_correlation,
 )
 
 __all__ = [

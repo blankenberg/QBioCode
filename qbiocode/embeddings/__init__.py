@@ -24,8 +24,8 @@ Usage
 >>> X_pqk = pqk(X, n_components=4)
 """
 
-from .embed import get_embeddings, pqk
 from .compute_autoencoder import ConvAutoencoder
+from .embed import get_embeddings, pqk
 
 __all__ = [
     "get_embeddings",
