@@ -70,7 +70,7 @@ def pqk(
                 float: the mapped value
             """
             coeff = x[0] / 2 if len(x) == 1 else reduce(lambda m, n: (m * n) / 2, x)
-            return coeff
+            return float(coeff)
 
     else:
         data_map_func = None

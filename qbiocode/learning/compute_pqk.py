@@ -112,7 +112,7 @@ def compute_pqk(
             float: the mapped value
         """
         coeff = x[0] / 2 if len(x) == 1 else reduce(lambda m, n: (m * n) / 2, x)
-        return coeff
+        return float(coeff)
 
     # choose a method for mapping your features onto the circuit
     feature_map, _ = qutils.get_feature_map(

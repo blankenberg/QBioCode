@@ -91,14 +91,16 @@ def compute_qnn(
     print(f"The number of parameters in your circuit is: {feature_map.num_parameters}")
     print(f"The number of ansatz parameters in your circuit is: {ansatz.num_parameters}")
 
+    neural_network: EstimatorQNN | SamplerQNN
+
     if primitive == "estimator":
         if args["backend"] == "simulator":
-            qnn = EstimatorQNN(
+            neural_network = EstimatorQNN(
                 circuit=qc, input_params=feature_map.parameters, weight_params=ansatz.parameters
             )
         else:
             pm = generate_preset_pass_manager(backend=backend, optimization_level=3)
-            qnn = EstimatorQNN(
+            neural_network = EstimatorQNN(
                 circuit=qc,
                 estimator=prim,
                 pass_manager=pm,
@@ -107,7 +109,9 @@ def compute_qnn(
             )
 
         # QNN maps inputs to [-1, +1]
-        qnn.forward(X_train[0, :], algorithm_globals.random.random(qnn.num_weights))
+        neural_network.forward(
+            X_train[0, :], algorithm_globals.random.random(neural_network.num_weights)
+        )
     else:
         # sampler=Sampler(backend=backend)
         # parity maps bitstrings to 0 or 1
@@ -119,7 +123,7 @@ def compute_qnn(
         )
         # construct QNN
         if "simulator" in args["backend"]:
-            qnn = SamplerQNN(
+            neural_network = SamplerQNN(
                 circuit=qc,
                 interpret=parity,
                 output_shape=output_shape,
@@ -128,7 +132,7 @@ def compute_qnn(
             )
         else:
             pm = generate_preset_pass_manager(backend=backend, optimization_level=3)
-            qnn = SamplerQNN(
+            neural_network = SamplerQNN(
                 circuit=qc,
                 sampler=prim,
                 interpret=parity,
@@ -139,7 +143,7 @@ def compute_qnn(
             )
 
     # construct classifier
-    qnn = NeuralNetworkClassifier(neural_network=qnn, optimizer=optimizer)
+    qnn = NeuralNetworkClassifier(neural_network=neural_network, optimizer=optimizer)
 
     # fit classifier to data
     model_fit = qnn.fit(X_train, y_train)

@@ -96,7 +96,7 @@ def compute_qsvc(
 
     Qkernel = FidelityQuantumKernel(fidelity=fidelity, feature_map=feature_map)
     if pegasos == True:
-        qsvc = PegasosQSVC(C=C, gamma=gamma, quantum_kernel=Qkernel)
+        qsvc = PegasosQSVC(C=C, quantum_kernel=Qkernel)
     else:
         qsvc = QSVC(C=C, gamma=gamma, quantum_kernel=Qkernel)
 

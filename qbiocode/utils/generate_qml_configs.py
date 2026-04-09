@@ -8,7 +8,7 @@ for systematic hyperparameter tuning of quantum machine learning models.
 import os
 import re
 import itertools
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Dict, Any, Optional, Tuple, cast
 import yaml
 import pandas as pd
 import numpy as np
@@ -157,7 +157,7 @@ def generate_qml_experiment_configs(
     ]
 
     param_combinations = pd.DataFrame(
-        list(itertools.product(*param_grid)),
+        list(itertools.product(*(cast(List[Any], values) for values in param_grid))),
         columns=[
             "method",
             "reps",
