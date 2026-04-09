@@ -7,7 +7,7 @@ algorithms for classification tasks. Each algorithm includes both standard and
 optimized versions (where applicable) with hyperparameter tuning.
 
 Classical Algorithms
--------------------
+--------------------
 - Decision Tree (DT)
 - Logistic Regression (LR)
 - Multi-Layer Perceptron (MLP)
@@ -17,7 +17,7 @@ Classical Algorithms
 - XGBoost (XGB)
 
 Quantum Algorithms
------------------
+------------------
 - Quantum Neural Network (QNN)
 - Quantum Support Vector Classifier (QSVC)
 - Variational Quantum Classifier (VQC)

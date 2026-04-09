@@ -37,7 +37,7 @@ def checkpoint_restart(
         Default is 'RawDataEvaluation.csv' (used by QProfiler).
     prefix_length : int, optional
         Number of characters to strip from the beginning of directory names to get
-        the dataset name. Default is 8 (strips 'dataset_' prefix used by QProfiler).
+        the dataset name. Default is 8 (strips ``dataset_`` prefix used by QProfiler).
         Set to 0 to use the full directory name.
     verbose : bool, optional
         If True, print the list of completed datasets and count. Default is False.
@@ -98,7 +98,7 @@ def checkpoint_restart(
       not its contents or validity
     - When restarting, you may need to manually combine results from the previous
       and current runs
-    - Directory names are expected to have a consistent prefix (e.g., 'dataset_')
+    - Directory names are expected to have a consistent prefix (e.g., ``dataset_``)
       that can be stripped using the prefix_length parameter
     - Non-directory entries in previous_results_dir are ignored
 

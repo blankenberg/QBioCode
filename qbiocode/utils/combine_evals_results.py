@@ -39,7 +39,7 @@ def track_progress(
         Default is 'RawDataEvaluation.csv'.
     prefix_length : int, optional
         Number of characters to skip from the beginning of directory names
-        when extracting dataset identifiers. Default is 8 (e.g., skips 'dataset_'
+        when extracting dataset identifiers. Default is 8 (e.g., skips ``dataset_``
         prefix).
     input_extension : str, optional
         File extension of input datasets (without dot). Default is 'csv'.

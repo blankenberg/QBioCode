@@ -39,7 +39,7 @@ def compute_svc(
     random_state=None,
 ):
     """This function generates a model using a Support Vector Classifier (SVC) method as implemented in
-    `scikit-learn <https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html>`_.
+    `scikit-learn <https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html>`__.
     It takes in parameter arguments specified in the config.yaml file, but will use the default parameters specified above if none are passed.
     The model is trained on the training dataset and validated on the test dataset.  The model is trained on the training dataset and validated on the test dataset.
     The function returns the evaluation of the model on the test dataset, including accuracy, AUC, F1 score, and the time taken to train and validate the model.
@@ -115,7 +115,7 @@ def compute_svc_opt(
     kernel=[],
 ):
     """This function generates a model using a Support Vector Classifier (SVC) method as implemented in
-    `scikit-learn <https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html>`_.
+    `scikit-learn <https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html>`__.
     It takes in parameter arguments specified in the config.yaml file, but will use the default parameters specified above if none are passed. The
     combination of parameters that led to the best performance is saved and returned as best_params, which can then be used on similar
     datasets, without having to run the grid search.

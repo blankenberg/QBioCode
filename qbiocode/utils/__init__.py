@@ -6,7 +6,7 @@ This module provides helper functions and utilities for data preprocessing,
 model management, IBM Quantum account handling, and result analysis.
 
 Available Functions
-------------------
+-------------------
 - scaler_fn: Data scaling and normalization
 - feature_encoding: Encode features for quantum circuits
 - qml_winner: Identify best performing quantum model

@@ -51,7 +51,7 @@ def compute_mlp(
 ):
     """
     This function generates a model using a Multi-layer Perceptron (mlp), a neural network, method as implemented in
-    `scikit-learn <https://scikit-learn.org/stable/modules/generated/sklearn.neural_network.MLPClassifier.html>`_. It takes in parameter
+    `scikit-learn <https://scikit-learn.org/stable/modules/generated/sklearn.neural_network.MLPClassifier.html>`__. It takes in parameter
     arguments specified in the config.yaml file, but will use the default parameters specified above if none are passed.
     The model is trained on the training dataset and validated on the test dataset. The function returns the evaluation of the model
     on the test dataset, including accuracy, AUC, F1 score, and the time taken to train and validate the model.

@@ -53,15 +53,17 @@ def get_intrinsic_dim(df):
 
 
 def get_condition_number(df):
-    """Get condition number of a matrix.
-        A function with a high condition number is said to be ill-conditioned.
-        Ill conditioned matrices produce large errors in its output even with small errors in its input.
-        Low condition number means more stable errors.
+    """Get the condition number of a matrix.
+
+    A high condition number indicates that the matrix is ill-conditioned and
+    can produce large output errors even for small input perturbations. A low
+    condition number indicates a more stable matrix.
+
     Args:
         df (pandas.DataFrame): Dataset in pandas with observation in rows, features in columns
 
     Returns:
-        float: condition number of the matrix represented in df
+        float: Condition number of the matrix represented in ``df``.
     """
     # In general,
     # meaning that it can produce large errors in its output even with small errors in its input.

@@ -7,7 +7,7 @@ models and datasets. It includes functions for model performance assessment,
 dataset complexity analysis, and automated model execution.
 
 Available Functions
-------------------
+-------------------
 - modeleval: Evaluate model performance with multiple metrics
 - evaluate: Comprehensive dataset complexity evaluation
 - model_run: Automated model training and evaluation pipeline

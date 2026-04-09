@@ -7,7 +7,7 @@ machine learning results, including correlation analysis and performance
 comparisons between classical and quantum models.
 
 Available Functions
-------------------
+-------------------
 - compute_results_correlation: Compute Spearman correlation between metrics
 - plot_results_correlation: Create correlation plots and visualizations
 

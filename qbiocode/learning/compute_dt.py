@@ -40,7 +40,7 @@ def compute_dt(
     monotonic_cst=None,
 ):
     """This function generates a model using a Decision Tree (DT) Classifier method as implemented in
-    `scikit-learn <https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html>`_.
+    `scikit-learn <https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html>`__.
     It takes in parameter arguments specified in the config.yaml file, but will use the default parameters specified above if none are passed.
     The model is trained on the training dataset and validated on the test dataset.  The model is trained on the training dataset and validated on the test dataset.
     The function returns the evaluation of the model on the test dataset, including accuracy, AUC, F1 score, and the time taken to train and validate the model.
@@ -116,7 +116,7 @@ def compute_dt_opt(
     max_features=[],
 ):
     """This function also generates a model using a Decision Tree (DT) Classifier method as implemented in
-    `scikit-learn <https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html>`_.
+    `scikit-learn <https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html>`__.
     The difference here is that this function runs a grid search. The range of the grid search for each parameter is specified in the config.yaml file. The
     combination of parameters that led to the best performance is saved and returned as best_params, which can then be used on similar
     datasets, without having to run the grid search.

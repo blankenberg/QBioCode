@@ -26,7 +26,7 @@ def compute_nb(
     var_smoothing=1e-09,
 ):
     """This function generates a model using a Gaussian Naive Bayes (NB) Classifier method as implemented in
-    `scikit-learn <https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.GaussianNB.html>`_.
+    `scikit-learn <https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.GaussianNB.html>`__.
     It takes in parameter arguments specified in the config.yaml file, but will use the default parameters specified above if none are passed.
     The model is trained on the training dataset and validated on the test dataset. The function returns the evaluation of the model
     on the test dataset, including accuracy, AUC, F1 score, and the time taken to train and validate the model.
@@ -71,7 +71,7 @@ def compute_nb_opt(
     var_smoothing=[1e-09, 1e-08, 1e-07, 1e-06, 1e-05, 1e-04, 1e-03, 1e-02],
 ):
     """This function generates a model using a Gaussian Naive Bayes (NB) Classifier method as implemented in
-    `scikit-learn <https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.GaussianNB.html>`_.
+    `scikit-learn <https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.GaussianNB.html>`__.
     It takes in parameter arguments specified in the config.yaml file, but will use the default parameters specified above if none are passed. The
     combination of parameters that led to the best performance is saved and returned as best_params, which can then be used on similar
     datasets, without having to run the grid search.  The model is trained on the training dataset and validated on the test dataset. The function returns the evaluation of the model
