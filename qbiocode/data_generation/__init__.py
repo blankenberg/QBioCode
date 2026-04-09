@@ -24,11 +24,11 @@ from .make_spirals import generate_spirals_datasets
 from .make_swiss_roll import generate_swiss_roll_datasets
 
 __all__ = [
-    'generate_circles_datasets',
-    'generate_moons_datasets',
-    'generate_classification_datasets',
-    'generate_s_curve_datasets',
-    'generate_spheres_datasets',
-    'generate_spirals_datasets',
-    'generate_swiss_roll_datasets',
+    "generate_circles_datasets",
+    "generate_moons_datasets",
+    "generate_classification_datasets",
+    "generate_s_curve_datasets",
+    "generate_spheres_datasets",
+    "generate_spirals_datasets",
+    "generate_swiss_roll_datasets",
 ]

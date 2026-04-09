@@ -12,7 +12,10 @@ from sklearn.metrics import f1_score, accuracy_score, roc_auc_score
 
 from qbiocode.utils.helper_fn import print_results
 
-def modeleval(y_test, y_predicted, beg_time, params, args, model:str, verbose = True, average='weighted'):
+
+def modeleval(
+    y_test, y_predicted, beg_time, params, args, model: str, verbose=True, average="weighted"
+):
     """
     Evaluates the model performance using accuracy, F1 score, and AUC.
 
@@ -36,14 +39,42 @@ def modeleval(y_test, y_predicted, beg_time, params, args, model:str, verbose = 
     f1 = f1_score(y_test, y_predicted, average=average)
     compile_time = time.time() - beg_time
     params = params
-    if verbose==True:
+    if verbose == True:
         print_results(model, accuracy, f1, compile_time, params)
-    
-    if args['grid_search'] == True: 
-        return pd.DataFrame({'y_test_' + model: [y_test], 
-                         'y_predicted_' + model: [y_predicted],
-                         'results_' + model: [{'model':model,'accuracy': accuracy, 'f1_score': f1,'time': compile_time, 'auc': auc, 'BestParams_GridSearch': params}]})
-    else: 
-        return pd.DataFrame({'y_test_' + model: [y_test], 
-                    'y_predicted_' + model: [y_predicted],
-                    'results_' + model: [{'model':model,'accuracy': accuracy, 'f1_score': f1,'time': compile_time, 'auc': auc, 'Model_Parameters': params}]})
+
+    if args["grid_search"] == True:
+        return pd.DataFrame(
+            {
+                "y_test_" + model: [y_test],
+                "y_predicted_" + model: [y_predicted],
+                "results_"
+                + model: [
+                    {
+                        "model": model,
+                        "accuracy": accuracy,
+                        "f1_score": f1,
+                        "time": compile_time,
+                        "auc": auc,
+                        "BestParams_GridSearch": params,
+                    }
+                ],
+            }
+        )
+    else:
+        return pd.DataFrame(
+            {
+                "y_test_" + model: [y_test],
+                "y_predicted_" + model: [y_predicted],
+                "results_"
+                + model: [
+                    {
+                        "model": model,
+                        "accuracy": accuracy,
+                        "f1_score": f1,
+                        "time": compile_time,
+                        "auc": auc,
+                        "Model_Parameters": params,
+                    }
+                ],
+            }
+        )

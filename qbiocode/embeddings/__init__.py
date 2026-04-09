@@ -28,7 +28,7 @@ from .embed import get_embeddings, pqk
 from .compute_autoencoder import ConvAutoencoder
 
 __all__ = [
-    'get_embeddings',
-    'pqk',
-    'ConvAutoencoder',
+    "get_embeddings",
+    "pqk",
+    "ConvAutoencoder",
 ]

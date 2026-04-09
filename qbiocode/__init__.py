@@ -33,6 +33,7 @@ from .learning.compute_dt import compute_dt, compute_dt_opt
 from .learning.compute_nb import compute_nb, compute_nb_opt
 from .learning.compute_lr import compute_lr, compute_lr_opt
 from .learning.compute_rf import compute_rf, compute_rf_opt
+
 try:
     from .learning.compute_xgb import compute_xgb, compute_xgb_opt
 except Exception:
@@ -61,7 +62,7 @@ from .evaluation.model_run import model_run
 # ====== Import visualization functions ======
 from .visualization.visualize_correlation import (
     plot_results_correlation,
-    compute_results_correlation
+    compute_results_correlation,
 )
 
 # ====== Import data generation functions ======
@@ -78,56 +79,49 @@ from .data_generation import (
 
 __all__ = [
     # Version
-    '__version__',
-    
+    "__version__",
     # Classical ML algorithms
-    'compute_svc',
-    'compute_svc_opt',
-    'compute_dt',
-    'compute_dt_opt',
-    'compute_nb',
-    'compute_nb_opt',
-    'compute_lr',
-    'compute_lr_opt',
-    'compute_rf',
-    'compute_rf_opt',
-    'compute_xgb',
-    'compute_xgb_opt',
-    'compute_mlp',
-    'compute_mlp_opt',
-    
+    "compute_svc",
+    "compute_svc_opt",
+    "compute_dt",
+    "compute_dt_opt",
+    "compute_nb",
+    "compute_nb_opt",
+    "compute_lr",
+    "compute_lr_opt",
+    "compute_rf",
+    "compute_rf_opt",
+    "compute_xgb",
+    "compute_xgb_opt",
+    "compute_mlp",
+    "compute_mlp_opt",
     # Quantum ML algorithms
-    'compute_qnn',
-    'compute_qsvc',
-    'compute_vqc',
-    'compute_pqk',
-    
+    "compute_qnn",
+    "compute_qsvc",
+    "compute_vqc",
+    "compute_pqk",
     # Embeddings
-    'get_embeddings',
-    'pqk',
-    
+    "get_embeddings",
+    "pqk",
     # Utilities
-    'scaler_fn',
-    'feature_encoding',
-    'qml_winner',
-    'checkpoint_restart',
-    
+    "scaler_fn",
+    "feature_encoding",
+    "qml_winner",
+    "checkpoint_restart",
     # Evaluation
-    'modeleval',
-    'evaluate',
-    'model_run',
-    
+    "modeleval",
+    "evaluate",
+    "model_run",
     # Visualization
-    'plot_results_correlation',
-    'compute_results_correlation',
-    
+    "plot_results_correlation",
+    "compute_results_correlation",
     # Data generation
-    'generate_data',
-    'generate_circles_datasets',
-    'generate_moons_datasets',
-    'generate_classification_datasets',
-    'generate_s_curve_datasets',
-    'generate_spheres_datasets',
-    'generate_spirals_datasets',
-    'generate_swiss_roll_datasets',
+    "generate_data",
+    "generate_circles_datasets",
+    "generate_moons_datasets",
+    "generate_classification_datasets",
+    "generate_s_curve_datasets",
+    "generate_spheres_datasets",
+    "generate_spirals_datasets",
+    "generate_swiss_roll_datasets",
 ]

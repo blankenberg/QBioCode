@@ -26,7 +26,7 @@ from .dataset_evaluation import evaluate
 from .model_run import model_run
 
 __all__ = [
-    'modeleval',
-    'evaluate',
-    'model_run',
+    "modeleval",
+    "evaluate",
+    "model_run",
 ]

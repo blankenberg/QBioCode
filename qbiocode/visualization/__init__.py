@@ -21,6 +21,6 @@ Usage
 from .visualize_correlation import compute_results_correlation, plot_results_correlation
 
 __all__ = [
-    'compute_results_correlation',
-    'plot_results_correlation',
+    "compute_results_correlation",
+    "plot_results_correlation",
 ]
