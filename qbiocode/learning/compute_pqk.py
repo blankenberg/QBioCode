@@ -1,15 +1,17 @@
 # ====== Base class imports ======
-import time
-import numpy as np
 import os
-import pandas as pd
+import time
 import warnings
-from sklearn.metrics import confusion_matrix, classification_report, f1_score, accuracy_score, auc
-from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
-from sklearn.neural_network import MLPClassifier
+
+import numpy as np
+import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.svm import SVC
 from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import (accuracy_score, auc, classification_report,
+                             confusion_matrix, f1_score)
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV
+from sklearn.neural_network import MLPClassifier
+from sklearn.svm import SVC
 
 try:
     from xgboost import XGBClassifier
@@ -19,18 +21,18 @@ except Exception:
     XGBOOST_AVAILABLE = False
     XGBClassifier = None  # type: ignore
 
-# ====== Additional local imports ======
-from qbiocode.evaluation.model_evaluation import modeleval
-import qbiocode.utils.qutils as qutils
-from sklearn.model_selection import GridSearchCV
+# from qiskit.primitives import Sampler
+from functools import reduce
 
 # ====== Qiskit imports ======
 from qiskit import QuantumCircuit
-
-# from qiskit.primitives import Sampler
-from functools import reduce
 from qiskit.quantum_info import Pauli
 from sklearn import svm
+from sklearn.model_selection import GridSearchCV
+
+import qbiocode.utils.qutils as qutils
+# ====== Additional local imports ======
+from qbiocode.evaluation.model_evaluation import modeleval
 
 
 def compute_pqk(

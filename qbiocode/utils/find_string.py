@@ -7,7 +7,7 @@ validating file contents.
 """
 
 import os
-from typing import List, Dict, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 
 def find_string_in_files(

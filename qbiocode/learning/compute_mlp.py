@@ -1,16 +1,18 @@
 # ====== Base class imports ======
 
 import time
+
 import numpy as np
-
-# ====== Scikit-learn imports ======
-
-from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import GridSearchCV
 from sklearn.multiclass import OneVsOneClassifier, OneVsRestClassifier
+from sklearn.neural_network import MLPClassifier
 
 # ====== Additional local imports ======
 from qbiocode.evaluation.model_evaluation import modeleval
+
+# ====== Scikit-learn imports ======
+
+
 
 # ====== Begin functions ======
 

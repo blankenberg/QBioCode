@@ -6,12 +6,13 @@ with varying sample sizes, noise levels, and dimensionality, useful for testing
 machine learning algorithms on complex non-linearly separable patterns.
 """
 
-import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
 import itertools
 import json
 import os
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 
 
 def make_spirals(n_samples=5000, n_classes=2, noise=0.3, dim=3):

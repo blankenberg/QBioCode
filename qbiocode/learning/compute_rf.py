@@ -1,16 +1,18 @@
 # ====== Base class imports ======
 
 import time
+
 import numpy as np
-
-# ====== Scikit-learn imports ======
-
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import GridSearchCV
 from sklearn.multiclass import OneVsOneClassifier, OneVsRestClassifier
 
 # ====== Additional local imports ======
 from qbiocode.evaluation.model_evaluation import modeleval
+
+# ====== Scikit-learn imports ======
+
+
 
 # ====== Begin functions ======
 

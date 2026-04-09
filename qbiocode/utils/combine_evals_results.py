@@ -8,8 +8,9 @@ output files in subdirectories.
 """
 
 import os
+from typing import List, Optional, Tuple
+
 import pandas as pd
-from typing import List, Tuple, Optional
 
 
 def track_progress(

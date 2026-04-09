@@ -18,7 +18,8 @@ Usage
 >>> plot_results_correlation(results_df, output_dir='plots/')
 """
 
-from .visualize_correlation import compute_results_correlation, plot_results_correlation
+from .visualize_correlation import (compute_results_correlation,
+                                    plot_results_correlation)
 
 __all__ = [
     "compute_results_correlation",

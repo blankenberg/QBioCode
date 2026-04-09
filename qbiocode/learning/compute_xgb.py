@@ -1,6 +1,7 @@
 # ====== Base class imports ======
 
 import time
+
 import numpy as np
 
 # ====== Scikit-learn imports ======

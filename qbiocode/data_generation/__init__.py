@@ -15,8 +15,8 @@ Available dataset generators:
 - generate_swiss_roll_datasets: 3D Swiss roll manifold
 """
 
-from .make_class import generate_classification_datasets
 from .make_circles import generate_circles_datasets
+from .make_class import generate_classification_datasets
 from .make_moons import generate_moons_datasets
 from .make_s_curve import generate_s_curve_datasets
 from .make_spheres import generate_spheres_datasets

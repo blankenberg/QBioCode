@@ -2,14 +2,16 @@
 
 import time
 
-# ====== Scikit-learn imports ======
-
-from sklearn.svm import SVC
 from sklearn.model_selection import GridSearchCV
 from sklearn.multiclass import OneVsOneClassifier, OneVsRestClassifier
+from sklearn.svm import SVC
 
 # ====== Additional local imports ======
 from qbiocode.evaluation.model_evaluation import modeleval
+
+# ====== Scikit-learn imports ======
+
+
 
 
 def compute_svc(

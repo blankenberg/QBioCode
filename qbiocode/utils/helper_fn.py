@@ -11,10 +11,11 @@ and result presentation in machine learning workflows.
 import time
 from typing import Literal
 
+from sklearn.preprocessing import (MinMaxScaler, OneHotEncoder, OrdinalEncoder,
+                                   StandardScaler)
+
 # ====== Scikit-learn imports ======
 
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
-from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
 
 
 def scaler_fn(X, scaling: Literal["None", "StandardScaler", "MinMaxScaler"] = "None"):

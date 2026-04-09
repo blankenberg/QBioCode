@@ -1,9 +1,9 @@
 ## function to find datasets where QML methods did better than classical
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
 import os
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 
 
 def qml_winner(results_df, rawevals_df, output_dir, tag):

@@ -6,12 +6,13 @@ datasets with varying sample sizes, dimensionality, and radii, useful for testin
 machine learning algorithms on high-dimensional non-linearly separable data.
 """
 
-import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
 import itertools
 import json
 import os
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 
 
 def generate_points_in_nd_sphere(n_s, dim=3, radius=1, thresh=0.9):

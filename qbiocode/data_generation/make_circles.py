@@ -6,12 +6,13 @@ with varying sample sizes and noise levels, useful for testing machine learning
 algorithms on non-linearly separable data.
 """
 
-from sklearn.datasets import make_circles
-import pandas as pd
-import numpy as np
 import itertools
 import json
 import os
+
+import numpy as np
+import pandas as pd
+from sklearn.datasets import make_circles
 
 # parameters to vary across the configurations
 N_SAMPLES = list(range(100, 300, 20))

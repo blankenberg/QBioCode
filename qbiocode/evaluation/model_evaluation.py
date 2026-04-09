@@ -2,15 +2,17 @@
 
 import time
 from typing import Literal
+
 import pandas as pd
+from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
+from sklearn.preprocessing import (MinMaxScaler, OneHotEncoder, OrdinalEncoder,
+                                   StandardScaler)
+
+from qbiocode.utils.helper_fn import print_results
 
 # ====== Scikit-learn imports ======
 
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
-from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
-from sklearn.metrics import f1_score, accuracy_score, roc_auc_score
 
-from qbiocode.utils.helper_fn import print_results
 
 
 def modeleval(

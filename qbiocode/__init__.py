@@ -26,25 +26,20 @@ Quick Start
 """
 
 # ====== Import data generation functions ======
-from .data_generation import (
-    generate_circles_datasets,
-    generate_classification_datasets,
-    generate_moons_datasets,
-    generate_s_curve_datasets,
-    generate_spheres_datasets,
-    generate_spirals_datasets,
-    generate_swiss_roll_datasets,
-)
+from .data_generation import (generate_circles_datasets,
+                              generate_classification_datasets,
+                              generate_moons_datasets,
+                              generate_s_curve_datasets,
+                              generate_spheres_datasets,
+                              generate_spirals_datasets,
+                              generate_swiss_roll_datasets)
 from .data_generation.generator import generate_data
-
 # ====== Import embedding functions ======
 from .embeddings.embed import get_embeddings, pqk
-
 # ====== Import evaluation functions ======
 from .evaluation.dataset_evaluation import evaluate
 from .evaluation.model_evaluation import modeleval
 from .evaluation.model_run import model_run
-
 # ====== Import learning functions ======
 from .learning.compute_dt import compute_dt, compute_dt_opt
 from .learning.compute_lr import compute_lr, compute_lr_opt
@@ -69,12 +64,9 @@ from .utils.dataset_checkpoint import checkpoint_restart
 from .utils.helper_fn import feature_encoding, scaler_fn
 from .utils.qc_winner_finder import qml_winner
 from .version import __version__
-
 # ====== Import visualization functions ======
-from .visualization.visualize_correlation import (
-    compute_results_correlation,
-    plot_results_correlation,
-)
+from .visualization.visualize_correlation import (compute_results_correlation,
+                                                  plot_results_correlation)
 
 __all__ = [
     # Version

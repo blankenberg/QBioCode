@@ -1,6 +1,8 @@
 # This will be a simple function to extract information from a user's qiskit-json file
 
-import json, os
+import json
+import os
+
 from qiskit_ibm_runtime import QiskitRuntimeService
 
 

@@ -34,22 +34,16 @@ Usage
 >>> X_encoded = feature_encoding(X, feature_encoding='OneHotEncoder')
 """
 
-from .helper_fn import scaler_fn, feature_encoding
-from .qc_winner_finder import qml_winner
+from .combine_evals_results import combine_results, track_progress
 from .dataset_checkpoint import checkpoint_restart
-from .combine_evals_results import track_progress, combine_results
 from .find_duplicates import find_duplicate_files
 from .find_string import find_string_in_files
 from .generate_qml_configs import generate_qml_experiment_configs
+from .helper_fn import feature_encoding, scaler_fn
 from .ibm_account import get_creds, instantiate_runtime_service
-from .qutils import (
-    get_backend_session,
-    get_sampler,
-    get_estimator,
-    get_ansatz,
-    get_feature_map,
-    get_optimizer,
-)
+from .qc_winner_finder import qml_winner
+from .qutils import (get_ansatz, get_backend_session, get_estimator,
+                     get_feature_map, get_optimizer, get_sampler)
 
 __all__ = [
     # Data preprocessing

@@ -6,12 +6,13 @@ with varying dimensionality, feature characteristics, and class distributions,
 useful for testing machine learning algorithms on high-dimensional data.
 """
 
-from sklearn.datasets import make_classification
-import pandas as pd
-import numpy as np
-import json
 import itertools
+import json
 import os
+
+import numpy as np
+import pandas as pd
+from sklearn.datasets import make_classification
 
 dataset_config = {}
 

@@ -21,8 +21,8 @@ Usage
 >>> complexity_metrics = evaluate(X, y)
 """
 
-from .model_evaluation import modeleval
 from .dataset_evaluation import evaluate
+from .model_evaluation import modeleval
 from .model_run import model_run
 
 __all__ = [

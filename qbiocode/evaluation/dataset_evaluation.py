@@ -1,23 +1,21 @@
 # ====== Base class imports ======
+import warnings
+
+import hfda
 import numpy as np
 import pandas as pd
-import hfda
-
+from scipy.linalg import eigvals, inv, norm
+from scipy.spatial import ConvexHull as CH
 # ====== Scipy imports ======
 from scipy.stats import entropy
-from scipy.linalg import norm, inv, eigvals
-from scipy.spatial import ConvexHull as CH
-
-# ====== Scikit-learn imports ======
-from sklearn import datasets
 from skdim import id
 from skdim.id import lPCA
+# ====== Scikit-learn imports ======
+from sklearn import datasets
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-from sklearn.feature_selection import mutual_info_classif, VarianceThreshold
-from sklearn.neighbors import KernelDensity
+from sklearn.feature_selection import VarianceThreshold, mutual_info_classif
 from sklearn.manifold import Isomap
-
-import warnings
+from sklearn.neighbors import KernelDensity
 
 
 # df = pd.DataFrame(X)

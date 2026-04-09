@@ -1,27 +1,28 @@
 import time
-import numpy as np
 from typing import Literal
 
+import numpy as np
+from qiskit.circuit.library import PauliFeatureMap, ZFeatureMap, ZZFeatureMap
+from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
+from qiskit_aer import AerSimulator
+from qiskit_ibm_runtime import QiskitRuntimeService
+from qiskit_ibm_runtime import SamplerV2 as Sampler
+from qiskit_machine_learning.algorithms import QSVC, PegasosQSVC
+from qiskit_machine_learning.kernels import FidelityQuantumKernel
+# from qiskit.primitives import Sampler
+from qiskit_machine_learning.state_fidelities import ComputeUncompute
+from sklearn.model_selection import GridSearchCV
+
+import qbiocode.utils.qutils as qutils
 # ====== Additional local imports ======
 from qbiocode.evaluation.model_evaluation import modeleval
-import qbiocode.utils.qutils as qutils
 
 # ====== Scikit-learn imports ======
 
-from sklearn.model_selection import GridSearchCV
 
 # ====== Qiskit imports ======
 
-from qiskit.circuit.library import ZZFeatureMap
-from qiskit.circuit.library import ZZFeatureMap, ZFeatureMap, PauliFeatureMap
-from qiskit_aer import AerSimulator
 
-# from qiskit.primitives import Sampler
-from qiskit_machine_learning.state_fidelities import ComputeUncompute
-from qiskit_machine_learning.kernels import FidelityQuantumKernel
-from qiskit_machine_learning.algorithms import QSVC, PegasosQSVC
-from qiskit_ibm_runtime import QiskitRuntimeService, SamplerV2 as Sampler
-from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 
 
 def compute_qsvc(

@@ -2,15 +2,14 @@
 import time
 from typing import Literal
 
-# ====== Additional local imports ======
-from qbiocode.evaluation.model_evaluation import modeleval
-import qbiocode.utils.qutils as qutils
-
+# from qiskit.primitives import Sampler
+from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
 # ====== Qiskit imports ======
 from qiskit_machine_learning.algorithms.classifiers import VQC
 
-# from qiskit.primitives import Sampler
-from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
+import qbiocode.utils.qutils as qutils
+# ====== Additional local imports ======
+from qbiocode.evaluation.model_evaluation import modeleval
 
 
 def compute_vqc(

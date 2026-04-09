@@ -1,7 +1,8 @@
 # ====== Base class imports ======
-import os, json
-import pandas as pd
+import json
+import os
 
+import pandas as pd
 # ======= Parallelization =====
 from joblib import Parallel, delayed
 
@@ -38,17 +39,17 @@ def model_run(X_train, X_test, y_train, y_test, data_key, args):
 
     # Lazy imports to avoid circular dependency
     # These imports happen inside the function, not at module level
-    from qbiocode.learning.compute_svc import compute_svc, compute_svc_opt
     from qbiocode.learning.compute_dt import compute_dt, compute_dt_opt
-    from qbiocode.learning.compute_nb import compute_nb, compute_nb_opt
     from qbiocode.learning.compute_lr import compute_lr, compute_lr_opt
-    from qbiocode.learning.compute_rf import compute_rf, compute_rf_opt
-    from qbiocode.learning.compute_xgb import compute_xgb, compute_xgb_opt
     from qbiocode.learning.compute_mlp import compute_mlp, compute_mlp_opt
+    from qbiocode.learning.compute_nb import compute_nb, compute_nb_opt
+    from qbiocode.learning.compute_pqk import compute_pqk
     from qbiocode.learning.compute_qnn import compute_qnn
     from qbiocode.learning.compute_qsvc import compute_qsvc
+    from qbiocode.learning.compute_rf import compute_rf, compute_rf_opt
+    from qbiocode.learning.compute_svc import compute_svc, compute_svc_opt
     from qbiocode.learning.compute_vqc import compute_vqc
-    from qbiocode.learning.compute_pqk import compute_pqk
+    from qbiocode.learning.compute_xgb import compute_xgb, compute_xgb_opt
 
     # Build model dictionary
     compute_ml_dict = {

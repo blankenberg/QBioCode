@@ -8,8 +8,8 @@ datasets for machine learning benchmarking and evaluation.
 ### Imports ###
 
 import qbiocode.data_generation.make_circles as circles
-import qbiocode.data_generation.make_moons as moons
 import qbiocode.data_generation.make_class as make_class
+import qbiocode.data_generation.make_moons as moons
 import qbiocode.data_generation.make_s_curve as s_curve
 import qbiocode.data_generation.make_spheres as spheres
 import qbiocode.data_generation.make_spirals as spirals

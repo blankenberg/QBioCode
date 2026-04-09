@@ -2,19 +2,18 @@
 import time
 from typing import Literal
 
-# ====== Additional local imports ======
-from qbiocode.evaluation.model_evaluation import modeleval
-import qbiocode.utils.qutils as qutils
-
-# ====== Qiskit imports ======
-from qiskit_machine_learning.algorithms.classifiers import NeuralNetworkClassifier
-from qiskit_machine_learning.neural_networks import SamplerQNN, EstimatorQNN
-from qiskit_machine_learning.circuit.library import qnn_circuit as QNNCircuit
-
-from qiskit_algorithms.utils import algorithm_globals
-
 # from qiskit.primitives import Sampler
 from qiskit.transpiler.preset_passmanagers import generate_preset_pass_manager
+from qiskit_algorithms.utils import algorithm_globals
+# ====== Qiskit imports ======
+from qiskit_machine_learning.algorithms.classifiers import \
+    NeuralNetworkClassifier
+from qiskit_machine_learning.circuit.library import qnn_circuit as QNNCircuit
+from qiskit_machine_learning.neural_networks import EstimatorQNN, SamplerQNN
+
+import qbiocode.utils.qutils as qutils
+# ====== Additional local imports ======
+from qbiocode.evaluation.model_evaluation import modeleval
 
 
 def compute_qnn(

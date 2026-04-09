@@ -2,20 +2,13 @@ import os
 from functools import reduce
 
 import numpy as np
-
-# ====== Embedding functions imports ======
-from sklearn.decomposition import NMF
-from sklearn.decomposition import PCA
-from sklearn.manifold import (
-    Isomap,
-    LocallyLinearEmbedding,
-    SpectralEmbedding,
-)
-from umap import UMAP
-
 # ====== Qiskit imports ======
 from qiskit import QuantumCircuit
 from qiskit.quantum_info import Pauli
+# ====== Embedding functions imports ======
+from sklearn.decomposition import NMF, PCA
+from sklearn.manifold import Isomap, LocallyLinearEmbedding, SpectralEmbedding
+from umap import UMAP
 
 import qbiocode.utils.qutils as qutils
 

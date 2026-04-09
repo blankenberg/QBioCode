@@ -2,14 +2,16 @@
 
 import time
 
-# ====== Scikit-learn imports ======
-
-from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import GridSearchCV
 from sklearn.multiclass import OneVsOneClassifier, OneVsRestClassifier
+from sklearn.tree import DecisionTreeClassifier
 
 # ====== Additional local imports ======
 from qbiocode.evaluation.model_evaluation import modeleval
+
+# ====== Scikit-learn imports ======
+
+
 
 # ====== Begin functions ======
 

@@ -47,11 +47,11 @@ except Exception:
     compute_xgb = None  # type: ignore
     compute_xgb_opt = None  # type: ignore
 
+from .compute_pqk import compute_pqk
 # Quantum ML algorithms
 from .compute_qnn import compute_qnn
 from .compute_qsvc import compute_qsvc
 from .compute_vqc import compute_vqc
-from .compute_pqk import compute_pqk
 
 __all__ = [
     # Classical algorithms

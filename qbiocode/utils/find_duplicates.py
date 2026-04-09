@@ -5,9 +5,9 @@ This module provides functions to find duplicate files based on content comparis
 useful for cleaning up redundant configuration files or identifying duplicate datasets.
 """
 
-import os
 import itertools
-from typing import List, Tuple, Optional
+import os
+from typing import List, Optional, Tuple
 
 
 def find_duplicate_files(

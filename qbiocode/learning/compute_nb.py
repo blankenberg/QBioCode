@@ -2,14 +2,16 @@
 
 import time
 
-# ====== Scikit-learn imports ======
-
-from sklearn.naive_bayes import GaussianNB
 from sklearn.model_selection import GridSearchCV
 from sklearn.multiclass import OneVsOneClassifier, OneVsRestClassifier
+from sklearn.naive_bayes import GaussianNB
 
 # ====== Additional local imports ======
 from qbiocode.evaluation.model_evaluation import modeleval
+
+# ====== Scikit-learn imports ======
+
+
 
 
 def compute_nb(
