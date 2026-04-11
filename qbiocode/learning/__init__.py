@@ -7,7 +7,7 @@ algorithms for classification tasks. Each algorithm includes both standard and
 optimized versions (where applicable) with hyperparameter tuning.
 
 Classical Algorithms
--------------------
+--------------------
 - Decision Tree (DT)
 - Logistic Regression (LR)
 - Multi-Layer Perceptron (MLP)
@@ -17,7 +17,7 @@ Classical Algorithms
 - XGBoost (XGB)
 
 Quantum Algorithms
------------------
+------------------
 - Quantum Neural Network (QNN)
 - Quantum Support Vector Classifier (QSVC)
 - Variational Quantum Classifier (VQC)
@@ -39,6 +39,7 @@ from .compute_mlp import compute_mlp, compute_mlp_opt
 from .compute_nb import compute_nb, compute_nb_opt
 from .compute_rf import compute_rf, compute_rf_opt
 from .compute_svc import compute_svc, compute_svc_opt
+
 try:
     from .compute_xgb import compute_xgb, compute_xgb_opt
 except Exception:
@@ -46,32 +47,32 @@ except Exception:
     compute_xgb = None  # type: ignore
     compute_xgb_opt = None  # type: ignore
 
+from .compute_pqk import compute_pqk
+
 # Quantum ML algorithms
 from .compute_qnn import compute_qnn
 from .compute_qsvc import compute_qsvc
 from .compute_vqc import compute_vqc
-from .compute_pqk import compute_pqk
 
 __all__ = [
     # Classical algorithms
-    'compute_dt',
-    'compute_dt_opt',
-    'compute_lr',
-    'compute_lr_opt',
-    'compute_mlp',
-    'compute_mlp_opt',
-    'compute_nb',
-    'compute_nb_opt',
-    'compute_rf',
-    'compute_rf_opt',
-    'compute_svc',
-    'compute_svc_opt',
-    'compute_xgb',
-    'compute_xgb_opt',
-    
+    "compute_dt",
+    "compute_dt_opt",
+    "compute_lr",
+    "compute_lr_opt",
+    "compute_mlp",
+    "compute_mlp_opt",
+    "compute_nb",
+    "compute_nb_opt",
+    "compute_rf",
+    "compute_rf_opt",
+    "compute_svc",
+    "compute_svc_opt",
+    "compute_xgb",
+    "compute_xgb_opt",
     # Quantum algorithms
-    'compute_qnn',
-    'compute_qsvc',
-    'compute_vqc',
-    'compute_pqk',
+    "compute_qnn",
+    "compute_qsvc",
+    "compute_vqc",
+    "compute_pqk",
 ]
