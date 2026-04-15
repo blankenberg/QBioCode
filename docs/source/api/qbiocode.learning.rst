@@ -4,6 +4,14 @@ qbiocode.learning package
 Submodules
 ----------
 
+qbiocode.learning.compute\_automl module
+----------------------------------------
+
+.. automodule:: qbiocode.learning.compute_automl
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 qbiocode.learning.compute\_dt module
 ------------------------------------
 

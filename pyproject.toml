@@ -63,6 +63,16 @@ Repository = "https://github.com/IBM/qbiocode"
 "Bug Tracker" = "https://github.com/IBM/qbiocode/issues"
 
 [project.optional-dependencies]
+automl = [
+    "flaml[automl]",
+    "autogluon.tabular",
+]
+automl-flaml = [
+    "flaml[automl]",
+]
+automl-autogluon = [
+    "autogluon.tabular",
+]
 apps = [
     "hydra-core",
     "joblib",
@@ -90,6 +100,8 @@ dev = [
     "types-PyYAML",
 ]
 all = [
+    "flaml[automl]",
+    "autogluon.tabular",
     "hydra-core",
     "joblib",
     "sphinx",
@@ -148,6 +160,9 @@ python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 addopts = "-v --cov=qbiocode --cov-report=html --cov-report=term"
+markers = [
+    "automl: tests that require the optional AutoML dependency stack",
+]
 
 [tool.mypy]
 python_version = "3.10"

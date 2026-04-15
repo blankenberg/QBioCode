@@ -54,8 +54,9 @@ QBioCode provides classical machine learning models from `scikit-learn <https://
     ~qbiocode.learning.compute_nb.compute_nb
     ~qbiocode.learning.compute_rf.compute_rf
     ~qbiocode.learning.compute_svc.compute_svc
+    ~qbiocode.learning.compute_automl.compute_automl
 
-Each model has an alternative function with grid search parameters for hyperparameter optimization. Details can be found in the specific :mod:`qbiocode.learning` submodules.
+Each model has an alternative function with grid search parameters for hyperparameter optimization. QBioCode also provides optional AutoML support through ``compute_automl`` with FLAML and AutoGluon backends. Install all AutoML backends with the ``automl`` extra, only FLAML with ``automl-flaml``, or only AutoGluon with ``automl-autogluon``. Details can be found in the specific :mod:`qbiocode.learning` submodules.
 
 Quantum Models
 """"""""""""""

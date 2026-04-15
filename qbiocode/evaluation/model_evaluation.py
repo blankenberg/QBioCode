@@ -12,8 +12,26 @@ from qbiocode.utils.helper_fn import print_results
 # ====== Scikit-learn imports ======
 
 
+def _calculate_auc(y_test, y_predicted, y_score=None, average="weighted"):
+    """Calculate AUC using scores when available, with a label fallback."""
+    try:
+        if y_score is not None:
+            return roc_auc_score(y_test, y_score, average=average, multi_class="ovr")
+        return roc_auc_score(y_test, y_predicted)
+    except ValueError:
+        return float("nan")
+
+
 def modeleval(
-    y_test, y_predicted, beg_time, params, args, model: str, verbose=True, average="weighted"
+    y_test,
+    y_predicted,
+    beg_time,
+    params,
+    args,
+    model: str,
+    verbose=True,
+    average="weighted",
+    y_score=None,
 ):
     """
     Evaluates the model performance using accuracy, F1 score, and AUC.
@@ -33,7 +51,7 @@ def modeleval(
         pd.DataFrame: DataFrame containing the evaluation results, including accuracy, F1 score, AUC, and model parameters.
     """
     # Calculate evaluation metrics
-    auc = roc_auc_score(y_test, y_predicted)
+    auc = _calculate_auc(y_test, y_predicted, y_score=y_score, average=average)
     accuracy = accuracy_score(y_test, y_predicted, normalize=True)
     f1 = f1_score(y_test, y_predicted, average=average)
     compile_time = time.time() - beg_time

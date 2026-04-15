@@ -191,13 +191,13 @@ Specify which machine learning models to evaluate.
 **All Models:**
 
 ```yaml
-model: ['svc', 'dt', 'lr', 'nb', 'rf', 'mlp', 'xgb', 'qsvc', 'vqc', 'qnn', 'pqk']
+model: ['svc', 'dt', 'lr', 'nb', 'rf', 'mlp', 'xgb', 'automl', 'qsvc', 'vqc', 'qnn', 'pqk']
 ```
 
 **Classical Models Only:**
 
 ```yaml
-model: ['rf', 'svc', 'lr', 'mlp', 'xgb']
+model: ['rf', 'svc', 'lr', 'mlp', 'xgb', 'automl']
 ```
 
 **Quantum Models Only:**
@@ -217,6 +217,7 @@ model: ['qsvc', 'vqc', 'qnn', 'pqk']
 | `rf` | Classical | Random Forest |
 | `mlp` | Classical | Multi-Layer Perceptron |
 | `xgb` | Classical | XGBoost |
+| `automl` | Classical AutoML | Optional FLAML-backed AutoML model search |
 | `qsvc` | Quantum | Quantum Support Vector Classifier |
 | `vqc` | Quantum | Variational Quantum Classifier |
 | `qnn` | Quantum | Quantum Neural Network |
@@ -270,6 +271,43 @@ gridsearch_xgb_args:
   n_estimators: [50, 100, 200]
   learning_rate: [0.01, 0.1, 0.3]
   max_depth: [3, 6, 9]
+```
+
+**Example: AutoML with FLAML**
+
+AutoML support is optional. Install all AutoML backends with `pip install 'qbiocode[automl]'`, or install only the FLAML backend with `pip install 'qbiocode[automl-flaml]'`. Then add `automl` to the `model` list.
+
+```yaml
+automl_args:
+  backend: 'flaml'
+  task: 'classification'
+  metric: 'f1_score'
+  time_budget: 300
+  estimator_list: ['xgboost', 'rf', 'extra_tree']
+  eval_method: 'cv'
+  n_splits: 5
+  n_jobs: -1
+  seed: 42
+  log_file_name: ''
+```
+
+**Example: AutoML with AutoGluon**
+
+Install the AutoGluon backend with `pip install 'qbiocode[automl-autogluon]'`, then set `backend: 'autogluon'`.
+
+```yaml
+automl_args:
+  backend: 'autogluon'
+  task: 'classification'
+  metric: 'f1_score'
+  time_budget: 300
+  presets: 'medium_quality'
+  fit_weighted_ensemble: true
+  save_artifacts: false
+  artifact_dir: null
+  num_cpus: 'auto'
+  num_gpus: 0
+  verbosity: 0
 ```
 
 ```{seealso}

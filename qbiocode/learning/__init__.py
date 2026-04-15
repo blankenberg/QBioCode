@@ -15,6 +15,7 @@ Classical Algorithms
 - Random Forest (RF)
 - Support Vector Classifier (SVC)
 - XGBoost (XGB)
+- AutoML (FLAML backend, optional dependency)
 
 Quantum Algorithms
 ------------------
@@ -39,6 +40,11 @@ from .compute_mlp import compute_mlp, compute_mlp_opt
 from .compute_nb import compute_nb, compute_nb_opt
 from .compute_rf import compute_rf, compute_rf_opt
 from .compute_svc import compute_svc, compute_svc_opt
+
+try:
+    from .compute_automl import compute_automl
+except Exception:
+    compute_automl = None  # type: ignore
 
 try:
     from .compute_xgb import compute_xgb, compute_xgb_opt
@@ -70,6 +76,7 @@ __all__ = [
     "compute_svc_opt",
     "compute_xgb",
     "compute_xgb_opt",
+    "compute_automl",
     # Quantum algorithms
     "compute_qnn",
     "compute_qsvc",

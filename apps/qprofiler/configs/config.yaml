@@ -155,6 +155,38 @@ gridsearch_mlp_args: {'hidden_layer_sizes': [[20,],[50,],[100,]],
                       }
 
 
+# Begin AutoML arguments
+# AutoML is optional. Install all AutoML backends with: pip install 'qbiocode[automl]'
+# Install only FLAML with: pip install 'qbiocode[automl-flaml]'
+# Install AutoGluon with: pip install 'qbiocode[automl-autogluon]'
+# Add 'automl' to the model list above to enable this backend.
+automl_args: {'backend': 'flaml',
+              'task': 'classification',
+              'metric': 'f1_score',
+              'time_budget': 300,
+              'estimator_list': ['xgboost', 'rf', 'extra_tree'],
+              'eval_method': 'cv',
+              'n_splits': 5,
+              'n_jobs': -1,
+              'seed': 42,
+              'log_file_name': ''
+              }
+
+# Example AutoGluon backend:
+# automl_args: {'backend': 'autogluon',
+#               'task': 'classification',
+#               'metric': 'f1_score',
+#               'time_budget': 300,
+#               'presets': 'medium_quality',
+#               'fit_weighted_ensemble': True,
+#               'save_artifacts': False,
+#               'artifact_dir': null,
+#               'num_cpus': 'auto',
+#               'num_gpus': 0,
+#               'verbosity': 0
+#               }
+
+
 #### Begin QML function parameters
 
 # Begin QNN arguments
